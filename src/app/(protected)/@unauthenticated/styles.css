@@ -2,6 +2,8 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden; /* Prevent scrollbar */
+  box-sizing: border-box; /* Include padding in height calculation */
 }
 
 .unauthenticated_main {
@@ -12,17 +14,18 @@
   justify-content: center;
   padding: 24px;
   gap: 32px;
+  box-sizing: border-box;
 }
 
 .unauthenticated_logo {
   margin-top: 48px;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
 }
 
 .unauthenticated_card {
   width: 100%;
   max-width: 400px;
-  padding: 24px;
+  padding: 12px;
   background: var(--tg-theme-bg-color);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -55,6 +58,8 @@
   justify-content: center;
   align-items: center;
   gap: 4px;
+  box-sizing: border-box; /* Include padding in width calculation */
+  flex-shrink: 0; /* Prevent footer from shrinking */
 }
 
 .unauthenticated_footer a {

@@ -6,20 +6,19 @@ import { useAccountPolling } from "@/hooks/useAccountPolling";
 import "./styles.css";
 import { useTranslations } from 'next-intl';
 import UserButtons from "@/libs/chromia-connect/user-buttons";
-import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 const NotRegistered = () => {
-  const router = useRouter();
   const { mint, isMinting, isMinted, isReady, error } = useMintNFT();
   const { data: hasAccount } = useAccountPolling(isMinted);
   const t = useTranslations('pages.notRegistered');
 
   useEffect(() => {
     if (hasAccount) {
-      router.push('/');
+      console.log('Account detected, attempting navigation...', { hasAccount });
+      window.location.href = '/';
     }
-  }, [hasAccount, router]);
+  }, [hasAccount]);
 
   const getStatusMessage = () => {
     if (isMinted) {
