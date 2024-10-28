@@ -65,9 +65,13 @@ const UserButtons = () => {
 
         return (
           <div className="flex flex-row space-x-2">
-            <Button mode="filled" onClick={connectToChromia}>
+            {authStatus !== "notRegistered" && (
+              <>
+              <Button mode="filled" onClick={connectToChromia}>
               <span className="auth-buttons-text">Authenticate</span>
             </Button>
+            </>
+            )}
             <Divider className="login-divider" />
             <>
               <p>Want to use a different wallet?</p>

@@ -1,0 +1,43 @@
+@extend(yours.external.on_external_create)
+function on_external_create(token: yours.token, attributes: map<text, gtv>) {
+  when (token.collection.name) {
+    "Pudgy Penguins" -> _create_avatar(token, attributes);
+    else -> return;
+  }
+}
+
+function _create_avatar(token: yours.token, attributes: map<text, gtv>) {
+  val avatar = avatar @? { token };
+  if (avatar == null) {
+    create avatar(token, image = text.from_gtv(attributes["image"]));
+  }
+}
+
+@extend(yours.after_transfer)
+function on_transfer(yours.token, from: ft4.accounts.account, to: ft4.accounts.account, amount: integer) {
+  val avatar = avatar @? { token };
+  if (avatar != null) {
+    _unequip_avatar(avatar, from);
+    _equip_avatar(avatar, to);
+  }
+}
+
+@extend(yours.after_mint)
+function on_mint(yours.token, account: ft4.accounts.account, amount: integer) {
+  val avatar = avatar @? { token };
+  if (avatar != null) {
+    _equip_avatar(avatar, account);
+  }
+}
+
+function _unequip_avatar(avatar, account: ft4.accounts.account) {
+  delete equipped_avatar @? { account, avatar };
+}
+
+function _equip_avatar(avatar, account: ft4.accounts.account) {
+  if (equipped_avatar @? { account } != null) {
+    // Already equips an avatar
+    return;
+  }
+  create equipped_avatar(account, avatar);
+}

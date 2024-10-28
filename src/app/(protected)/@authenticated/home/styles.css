@@ -1,0 +1,16 @@
+.home_avatarContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 16px;
+  gap: 24px;
+}
+
+.home_mainAvatar {
+  border: 2px solid var(--tg-theme-button-color);
+}
+
+.home_avatarInfo {
+  width: 100%;
+  text-align: center;
+}

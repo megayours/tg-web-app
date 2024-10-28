@@ -1,1 +1,10 @@
 @mount("dapp") module;
+
+namespace yours {
+  import lib.yours.*;
+  import lib.yours.external;
+}
+
+namespace ft4 {
+  import lib.ft4.accounts;
+}

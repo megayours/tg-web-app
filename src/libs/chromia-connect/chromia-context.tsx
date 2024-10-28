@@ -77,7 +77,6 @@ export const ChromiaProvider: React.FunctionComponent<
     useQuery({
       queryKey: ["chromiaSession", isConnected, connector?.id],
       queryFn: async () => {
-        console.log("chromiaSessionData", chromiaSessionData);
         if (isConnected && connector?.getProvider && chromiaClient) {
           const provider = (await connector.getProvider()) as Eip1193Provider;
           const evmKeyStore = await createWeb3ProviderEvmKeyStore(provider);
@@ -105,7 +104,6 @@ export const ChromiaProvider: React.FunctionComponent<
               });
 
               setAuthStatus("connected");
-
               return { session, logout };
             }
           } else {
@@ -117,6 +115,7 @@ export const ChromiaProvider: React.FunctionComponent<
       },
       enabled: Boolean(chromiaClient) && isConnected && Boolean(connector),
       staleTime: Infinity,
+      refetchOnWindowFocus: true,
     });
 
   useEffect(() => {

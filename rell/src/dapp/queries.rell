@@ -1,0 +1,27 @@
+struct avatar_dto {
+  project: text;
+  collection: text;
+  token_id: integer;
+  image: text;
+}
+
+function _avatar_dto(avatar) {
+  return avatar_dto(
+    project = avatar.token.collection.project.name,
+    collection = avatar.token.collection.name,
+    token_id = avatar.token.id,
+    image = avatar.image
+  );
+}
+
+query get_equipped_avatar(account_id: byte_array) {
+  return equipped_avatar @? { .account.id == account_id } ( _avatar_dto($.avatar) );
+}
+
+query get_avatars(account_id: byte_array) {
+  return (a: avatar, tb: yours.token_balance) @* { 
+    a.token == tb.token,
+    tb.account.id == account_id,
+    tb.amount > 0
+  } ( _avatar_dto(a) );
+}

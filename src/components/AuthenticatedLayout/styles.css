@@ -1,0 +1,19 @@
+.authenticatedLayout_container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.authenticatedLayout_topBar {
+  padding: 12px 16px;
+  background-color: var(--tg-theme-bg-color);
+  border-bottom: 1px solid var(--tg-theme-hint-color);
+  display: flex;
+  justify-content: flex-end;  /* Add this to align content to the right */
+  align-items: center;        /* Add this to vertically center the content */
+}
+
+.authenticatedLayout_content {
+  flex: 1;
+  padding-bottom: 56px; /* Height of the TabBar */
+}

@@ -19,37 +19,37 @@ const Unauthenticated = () => (
 
       <div className="unauthenticated_features">
         <div className="unauthenticated_feature">
-          <Text Component="caption" style={{ fontWeight: 'bold', marginBottom: '2px' }}>
+          <Text Component="span" style={{ fontWeight: 'bold', marginBottom: '2px' }}>
             🧩 Composable
           </Text>
-          <Text Component="caption">
+          <Text Component="span">
             Mix & match token features
           </Text>
         </div>
 
         <div className="unauthenticated_feature">
-          <Text Component="caption" style={{ fontWeight: 'bold', marginBottom: '4px' }}>
+          <Text Component="span" style={{ fontWeight: 'bold', marginBottom: '4px' }}>
             🎨 Dynamic
           </Text>
-          <Text Component="caption">
+          <Text Component="span">
             Remixable metadata
           </Text>
         </div>
 
         <div className="unauthenticated_feature">
-          <Text Component="caption" style={{ fontWeight: 'bold', marginBottom: '4px' }}>
+          <Text Component="span" style={{ fontWeight: 'bold', marginBottom: '4px' }}>
             ⛓️ <br/>On-chain
           </Text>
-          <Text Component="caption">
+          <Text Component="span">
             Metadata on the blockchain
           </Text>
         </div>
 
         <div className="unauthenticated_feature">
-          <Text Component="caption" style={{ fontWeight: 'bold', marginBottom: '4px' }}>
+          <Text Component="span" style={{ fontWeight: 'bold', marginBottom: '4px' }}>
             🌐 Decentralized
           </Text>
-          <Text Component="caption">
+          <Text Component="span">
             True ownership
           </Text>
         </div>
@@ -57,7 +57,7 @@ const Unauthenticated = () => (
     </div>
 
     <div className="unauthenticated_footer">
-      <Text Component="caption" style={{ color: 'var(--tg-theme-hint-color)' }}>
+      <Text Component="span" style={{ color: 'var(--tg-theme-hint-color)' }}>
         Copyright {new Date().getFullYear()}
       </Text>
       <Link href="https://megayours.com" target="_blank">megayours.com</Link>

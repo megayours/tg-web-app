@@ -2,18 +2,30 @@
 
 import { Section, Text, Button } from "@telegram-apps/telegram-ui";
 import { useMintNFT } from "@/hooks/useMintNFT";
+import { useAccountPolling } from "@/hooks/useAccountPolling";
 import "./styles.css";
 import { useTranslations } from 'next-intl';
+import UserButtons from "@/libs/chromia-connect/user-buttons";
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 const NotRegistered = () => {
+  const router = useRouter();
   const { mint, isMinting, isMinted, isReady, error } = useMintNFT();
+  const { data: hasAccount } = useAccountPolling(isMinted);
   const t = useTranslations('pages.notRegistered');
+
+  useEffect(() => {
+    if (hasAccount) {
+      router.push('/');
+    }
+  }, [hasAccount, router]);
 
   const getStatusMessage = () => {
     if (isMinted) {
       return (
         <Text Component="p" style={{ color: 'var(--tg-theme-link-color)' }}>
-          NFT minted successfully! You can now authorize to access the app.
+          NFT minting in progress!
         </Text>
       );
     }
@@ -52,7 +64,7 @@ const NotRegistered = () => {
           <div style={{ padding: '16px 0' }}>
             <Button 
               onClick={mint}
-              disabled={!isReady || isMinting}
+              disabled={!isReady || isMinting || isMinted}
               loading={isMinting}
             >
               {isMinting ? 'Minting...' : 'Mint NFT'}
@@ -63,21 +75,14 @@ const NotRegistered = () => {
             {getStatusMessage()}
           </div>
 
-          {isMinted && (
+          {isMinted && !hasAccount && (
             <div style={{ marginTop: '16px', padding: '16px', backgroundColor: 'var(--tg-theme-secondary-bg-color)', borderRadius: '8px' }}>
-              <Text Component="p" style={{ marginBottom: '8px', fontWeight: 'bold' }}>
-                Next Steps:
+              <Text Component="p" style={{ marginBottom: '8px' }}>
+                Please wait while we set up your account...
               </Text>
-              <ol style={{ paddingLeft: '20px' }}>
-                <li>
-                  <Text Component="p">Click the &ldquo;Authorize&rdquo; button above to access the app</Text>
-                </li>
-                <li>
-                  <Text Component="p">If you want to use a different wallet, click &ldquo;Disconnect&rdquo; first</Text>
-                </li>
-              </ol>
             </div>
           )}
+          <UserButtons />
         </div>
       </div>
     </Section>

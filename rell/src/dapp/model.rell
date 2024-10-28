@@ -1,0 +1,9 @@
+entity avatar {
+  key yours.token;
+  image: text;
+}
+
+entity equipped_avatar {
+  key ft4.accounts.account;
+  index avatar;
+}

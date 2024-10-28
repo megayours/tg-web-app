@@ -1,0 +1,24 @@
+.profile_avatarCard {
+  padding: 16px;
+  margin-bottom: 16px;
+  background: var(--tg-theme-bg-color);
+  border-radius: 12px;
+  border: 1px solid var(--tg-theme-hint-color);
+}
+
+.profile_avatarHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.profile_avatarTitles {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profile_equippedAvatar {
+  border: 2px solid var(--tg-theme-button-color);
+}
