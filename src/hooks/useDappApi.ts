@@ -8,6 +8,7 @@ export type Avatar = {
   project: string;
   collection: string;
   token_id: string;
+  token_name: string;
 }
 
 // Helper function to convert IPFS URL to gateway URL

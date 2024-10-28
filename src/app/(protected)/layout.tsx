@@ -1,5 +1,6 @@
 "use client";
 
+import Loading from "@/components/Loading/Loading";
 import { useChromia } from "@/libs/chromia-connect/chromia-context";
 import type React from "react";
 
@@ -12,11 +13,13 @@ const Layout = ({
   unauthenticated: React.ReactNode;
   notRegistered: React.ReactNode;
 }>) => {
-  const { authStatus } = useChromia();
-  console.log(`authStatus: ${authStatus}`);
+  const { authStatus, isLoading } = useChromia();
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   if (authStatus === "notRegistered") {
-    console.log("Detected notRegistered");
     return <>{notRegistered}</>;
   }
 

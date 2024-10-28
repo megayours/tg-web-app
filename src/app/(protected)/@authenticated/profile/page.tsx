@@ -1,6 +1,6 @@
 'use client';
 
-import { Section, Cell, List, Avatar as TelegramAvatar, Text, Divider, Selectable, LargeTitle } from '@telegram-apps/telegram-ui';
+import { Section, Cell, List, Avatar as TelegramAvatar, Selectable } from '@telegram-apps/telegram-ui';
 import { Page } from '@/components/Page';
 import { Avatar, useAllAvatars, useEquippedAvatar } from '@/hooks/useDappApi';
 import './styles.css';
@@ -45,7 +45,7 @@ export default function Profile() {
               description={`${avatar.project} - ${avatar.collection}`} 
               multiline
             >
-              Token ID {avatar.token_id}
+              {avatar.token_name}
             </Cell>
           ))}
           </form>
