@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 
 const avatarKey = (avatar: Avatar) => `${avatar.project}-${avatar.collection}-${avatar.token_id}`;
 
-export default function Profile() {
+const Profile = () => {
   const { data: avatars, isLoading } = useAllAvatars();
   const { data: equippedAvatar } = useEquippedAvatar();
   const [selectedAvatarId, setSelectedAvatarId] = useState<string | null>(null);
@@ -54,3 +54,5 @@ export default function Profile() {
     </Page>
   );
 }
+
+export default Profile;

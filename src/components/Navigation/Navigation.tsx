@@ -1,7 +1,7 @@
 'use client';
 
 import { TabsList, IconButton } from '@telegram-apps/telegram-ui';
-import { usePathname, useRouter } from 'next/navigation';
+import { useNavigationStore } from '@/store/navigationStore';
 import './styles.css';
 import { TabsItem } from '@telegram-apps/telegram-ui/dist/components/Navigation/TabsList/components/TabsItem/TabsItem';
 
@@ -10,27 +10,24 @@ const NAVIGATION_ITEMS = [
     index: 0,
     id: 'home',
     label: 'Home',
-    href: '/home',
+    view: 'home' as const,
     icon: '🏠'
   },
   {
     index: 1,
     id: 'profile',
     label: 'Profile',
-    href: '/profile',
+    view: 'profile' as const,
     icon: '👤'
   }
 ];
 
 export function Navigation() {
-  const router = useRouter();
-  const pathname = usePathname();
-
-  const activeTab = NAVIGATION_ITEMS.findIndex(item => item.href === pathname);
+  const { currentView, setView } = useNavigationStore();
 
   const handleTabChange = (index: number) => {
     const item = NAVIGATION_ITEMS[index];
-    router.push(item.href);
+    setView(item.view);
   };
 
   return (
@@ -40,7 +37,7 @@ export function Navigation() {
           <TabsItem
             key={item.index} 
             onClick={() => handleTabChange(item.index)} 
-            selected={item.index === activeTab}
+            selected={item.view === currentView}
           >
             <div className="navigation_tab">
               <span className="navigation_icon">{item.icon}</span>

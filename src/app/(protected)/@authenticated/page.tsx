@@ -1,7 +1,19 @@
 'use client';
 
-import { redirect } from 'next/navigation';
+import { useNavigationStore } from '@/store/navigationStore';
+import Home from '@/components/Protected/Home/Home';
+import Profile from '@/components/Protected/Profile/Profile';
+import { withAuth } from '@/components/Auth/withAuth';
 
-export default function RootPage() {
-  redirect('/home');
+const AuthenticatedPage = () => {
+  const { currentView } = useNavigationStore();
+
+  return (
+    <>
+      {currentView === 'home' && <Home />}
+      {currentView === 'profile' && <Profile />}
+    </>
+  );
 }
+
+export default withAuth(AuthenticatedPage);

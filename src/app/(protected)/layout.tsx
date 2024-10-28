@@ -1,29 +1,31 @@
 "use client";
 
-import Loading from "@/components/Loading/Loading";
-import { useChromia } from "@/libs/chromia-connect/chromia-context";
 import type React from "react";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useChromia } from "@/libs/chromia-connect/chromia-context";
+import { useEffect, useState } from "react";
+import Loading from "@/components/Loading/Loading";
 
 const Layout = ({
-  authenticated: _authenticated,
+  authenticated,
+  unauthenticated,
   notRegistered,
 }: Readonly<{
   authenticated: React.ReactNode;
+  unauthenticated: React.ReactNode;
   notRegistered: React.ReactNode;
 }>) => {
-  const { authStatus, isLoading } = useChromia();
-  const router = useRouter();
+  const { isLoading, authStatus } = useChromia();
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
-    if (!isLoading && authStatus === "disconnected") {
-      router.replace("/");
+    // Wait for initial auth check to complete
+    if (!isLoading) {
+      setIsInitialLoad(false);
     }
-  }, [authStatus, isLoading, router]);
+  }, [isLoading]);
 
-  // Show loading until we're sure about the auth state
-  if (isLoading) {
+  // Always show loading during initial load or auth check for protected routes
+  if (isInitialLoad || isLoading) {
     return <Loading />;
   }
 
@@ -32,11 +34,10 @@ const Layout = ({
   }
 
   if (authStatus === "connected") {
-    return <>{_authenticated}</>;
+    return <>{authenticated}</>;
   }
-
-  // Return loading while redirecting to prevent flash
-  return <Loading />;
+  return <>{unauthenticated}</>;
 };
 
 export default Layout;
+
