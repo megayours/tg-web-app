@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import './styles.css';
+import Image from 'next/image';
 
 interface LogoProps {
   width?: number | string;
@@ -17,10 +18,10 @@ const defaultImages = [
   '/images/logo/logo-image5.png',
 ];
 
-export default function Logo({ 
+export default function Logo({
   width = 300,
-  images = defaultImages, 
-  interval = 1000 
+  images = defaultImages,
+  interval = 1000
 }: LogoProps) {
   const [currentImage, setCurrentImage] = useState(0);
 
@@ -35,18 +36,19 @@ export default function Logo({
   return (
     <div className="logo_container">
       {images.map((image, index) => (
-        <img
+        <Image
           key={index}
           src={image}
           alt={`Logo ${index + 1}`}
           className="logo_image"
+          width={typeof width === 'number' ? width : parseInt(width)}
+          height={typeof width === 'number' ? width : parseInt(width)}
           style={{
-            width,
             opacity: index === currentImage ? 1 : 0,
           }}
+          priority={index === 0} // Prioritize loading of first image
         />
       ))}
     </div>
   );
 }
-

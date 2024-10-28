@@ -70,10 +70,10 @@ const NotRegistered = () => {
               </Text>
               <ol style={{ paddingLeft: '20px' }}>
                 <li>
-                  <Text Component="p">Click the "Authorize" button above to access the app</Text>
+                  <Text Component="p">Click the &ldquo;Authorize&rdquo; button above to access the app</Text>
                 </li>
                 <li>
-                  <Text Component="p">If you want to use a different wallet, click "Disconnect" first</Text>
+                  <Text Component="p">If you want to use a different wallet, click &ldquo;Disconnect&rdquo; first</Text>
                 </li>
               </ol>
             </div>

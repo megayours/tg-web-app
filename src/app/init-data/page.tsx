@@ -9,6 +9,7 @@ import {
   type DisplayDataRow,
 } from '@/components/DisplayData/DisplayData';
 import { Page } from '@/components/Page';
+import Image from 'next/image';
 
 function getUserRows(user: User): DisplayDataRow[] {
   return [
@@ -90,7 +91,7 @@ export default function InitDataPage() {
       { title: 'username', value: username },
       { title: 'photo_url', value: photoUrl },
     ];
-  }, [initData]);
+  }, [initDataState]); // Changed from [initData] to [initDataState]
 
   if (!initDataRows) {
     return (
@@ -99,10 +100,12 @@ export default function InitDataPage() {
           header="Oops"
           description="Application was launched with missing init data"
         >
-          <img
+          <Image
             alt="Telegram sticker"
             src="https://xelene.me/telegram.gif"
-            style={{ display: 'block', width: '144px', height: '144px' }}
+            width={144}
+            height={144}
+            style={{ display: 'block' }}
           />
         </Placeholder>
       </Page>
