@@ -1,0 +1,14 @@
+.auth-buttons-text {
+  margin-right: 0.5rem;
+  margin-left: 0.5rem;
+}
+
+.auth-buttons-icon {
+  height: 1rem;
+  width: 1rem;
+}
+
+.login-divider {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}

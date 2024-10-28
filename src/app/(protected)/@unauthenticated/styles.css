@@ -1,0 +1,74 @@
+.unauthenticated_container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.unauthenticated_main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  gap: 32px;
+}
+
+.unauthenticated_logo {
+  margin-top: 48px;
+  margin-bottom: 24px;
+}
+
+.unauthenticated_card {
+  width: 100%;
+  max-width: 400px;
+  padding: 24px;
+  background: var(--tg-theme-bg-color);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.unauthenticated_features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.unauthenticated_feature {
+  padding: 16px;
+  background: var(--tg-theme-bg-color);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.unauthenticated_footer {
+  padding: 16px;
+  text-align: center;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}
+
+.unauthenticated_footer a {
+  color: var(--tg-theme-link-color);
+  text-decoration: none;
+  margin-left: 4px;
+}
+
+.unauthenticated_footer a:visited {
+  color: var(--tg-theme-link-color);
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
