@@ -27,7 +27,7 @@ export default async function RootLayout({ children, initialState }: PropsWithCh
     <html lang={locale}>
     <body>
       <I18nProvider>
-      <ClientProviders>
+      <ClientProviders initialState={initialState}>
         <Root>
           {children}
         </Root>
