@@ -1,5 +1,5 @@
 import UserButtons from "@/libs/chromia-connect/user-buttons";
-import { Section, Text, Avatar } from "@telegram-apps/telegram-ui";
+import { Section, Text } from "@telegram-apps/telegram-ui";
 import "./styles.css";
 import Logo from "@/components/Logo/Logo";
 import Link from "next/link";

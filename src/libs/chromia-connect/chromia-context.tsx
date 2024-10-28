@@ -77,45 +77,49 @@ export const ChromiaProvider: React.FunctionComponent<
     useQuery({
       queryKey: ["chromiaSession", isConnected, connector?.id],
       queryFn: async () => {
-        if (isConnected && connector?.getProvider && chromiaClient) {
-          const provider = (await connector.getProvider()) as Eip1193Provider;
-          const evmKeyStore = await createWeb3ProviderEvmKeyStore(provider);
+        if (!isConnected || !connector?.getProvider || !chromiaClient) {
+          setAuthStatus("disconnected");
+          return null;
+        }
 
-          const keyStoreInteractor = createKeyStoreInteractor(
+        const provider = (await connector.getProvider()) as Eip1193Provider;
+        const evmKeyStore = await createWeb3ProviderEvmKeyStore(provider);
+        const keyStoreInteractor = createKeyStoreInteractor(
+          chromiaClient,
+          evmKeyStore,
+        );
+        const [account] = await keyStoreInteractor.getAccounts();
+
+        if (!account) {
+          setAuthStatus("notRegistered");
+          return null;
+        }
+
+        if (await hasActiveSessionStorageLogin(account)) {
+          const evmKeyStoreInteractor = createKeyStoreInteractor(
             chromiaClient,
             evmKeyStore,
           );
-          const [account] = await keyStoreInteractor.getAccounts();
-          if (account) {
-            const accountId = account.id;
-            const evmKeyStoreInteractor = createKeyStoreInteractor(
-              chromiaClient,
-              evmKeyStore,
-            );
+          const { session, logout } = await evmKeyStoreInteractor.login({
+            accountId: account.id,
+            loginKeyStore: createSessionStorageLoginKeyStore(),
+            config: {
+              rules: ttlLoginRule(hours(12)),
+              flags: AuthFlags,
+            },
+          });
 
-            if (await hasActiveSessionStorageLogin(account)) {
-              const { session, logout } = await evmKeyStoreInteractor.login({
-                accountId,
-                loginKeyStore: createSessionStorageLoginKeyStore(),
-                config: {
-                  rules: ttlLoginRule(hours(12)),
-                  flags: AuthFlags,
-                },
-              });
-
-              setAuthStatus("connected");
-              return { session, logout };
-            }
-          } else {
-            setAuthStatus("notRegistered");
-          }
+          setAuthStatus("connected");
+          return { session, logout };
         }
 
+        setAuthStatus("disconnected");
         return null;
       },
       enabled: Boolean(chromiaClient) && isConnected && Boolean(connector),
       staleTime: Infinity,
-      refetchOnWindowFocus: true,
+      // Reduce unnecessary refetches
+      refetchOnWindowFocus: false,
     });
 
   useEffect(() => {
