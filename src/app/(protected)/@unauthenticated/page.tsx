@@ -12,10 +12,6 @@ const Unauthenticated = () => (
       </div>
 
       <div className="unauthenticated_card">
-        <Text Component="header" style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px' }}>
-          NFTs brought alive
-        </Text>
-
         <div style={{ padding: '16px 0' }}>
           <UserButtons />
         </div>
@@ -23,7 +19,7 @@ const Unauthenticated = () => (
 
       <div className="unauthenticated_features">
         <div className="unauthenticated_feature">
-          <Text Component="caption" style={{ fontWeight: 'bold', marginBottom: '4px' }}>
+          <Text Component="caption" style={{ fontWeight: 'bold', marginBottom: '2px' }}>
             🧩 Composable
           </Text>
           <Text Component="caption">

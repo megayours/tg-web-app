@@ -32,16 +32,19 @@
 .unauthenticated_features {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 12px;
   width: 100%;
   max-width: 400px;
 }
 
 .unauthenticated_feature {
-  padding: 16px;
+  padding: 12px;
   background: var(--tg-theme-bg-color);
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .unauthenticated_footer {
