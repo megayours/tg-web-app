@@ -1,12 +1,24 @@
 'use client';
 
-import { Section, Cell, List, Avatar as TelegramAvatar, Text } from '@telegram-apps/telegram-ui';
+import { Section, Cell, List, Avatar as TelegramAvatar, Text, Divider, Selectable, LargeTitle } from '@telegram-apps/telegram-ui';
 import { Page } from '@/components/Page';
-import { useAllAvatars } from '@/hooks/useDappApi';
+import { Avatar, useAllAvatars, useEquippedAvatar } from '@/hooks/useDappApi';
 import './styles.css';
+import { useState, useEffect } from 'react';
+
+const avatarKey = (avatar: Avatar) => `${avatar.project}-${avatar.collection}-${avatar.token_id}`;
 
 export default function Profile() {
   const { data: avatars, isLoading } = useAllAvatars();
+  const { data: equippedAvatar } = useEquippedAvatar();
+  const [selectedAvatarId, setSelectedAvatarId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (equippedAvatar && !selectedAvatarId) {
+      const key = avatarKey(equippedAvatar);
+      setSelectedAvatarId(key);
+    }
+  }, [equippedAvatar, selectedAvatarId]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -15,38 +27,28 @@ export default function Profile() {
   return (
     <Page>
       <List>
-        <Section header="Your Collection">
+        <Section header="Equipped Avatar">
+          <form>
           {avatars?.map(avatar => (
-            <div key={avatar.id} className="profile_avatarCard">
-              <div className="profile_avatarHeader">
-                <TelegramAvatar 
-                  size={48} 
-                  src={avatar.image}
+            <Cell 
+              key={avatarKey(avatar)}
+              Component="label" 
+              before={
+                <Selectable
+                  checked={selectedAvatarId === avatarKey(avatar)}
+                  onChange={() => setSelectedAvatarId(avatarKey(avatar))}
+                  name="avatar-selection" 
+                  value={avatarKey(avatar)} 
                 />
-                <div className="profile_avatarTitles">
-                  <Text weight="3">{avatar.name}</Text>
-                </div>
-              </div>
-              
-              <List>
-                <Cell
-                  size={12}
-                  subtitle="Project"
-                  after={avatar.project}
-                />
-                <Cell
-                  size={12}
-                  subtitle="Collection"
-                  after={avatar.collection}
-                />
-                <Cell
-                  size={12}
-                  subtitle="Token ID"
-                  after={avatar.token_id}
-                />
-              </List>
-            </div>
+              }
+              after={<TelegramAvatar size={40} src={avatar.image} />}
+              description={`${avatar.project} - ${avatar.collection}`} 
+              multiline
+            >
+              Token ID {avatar.token_id}
+            </Cell>
           ))}
+          </form>
         </Section>
       </List>
     </Page>

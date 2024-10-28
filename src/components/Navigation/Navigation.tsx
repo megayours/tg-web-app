@@ -43,8 +43,7 @@ export function Navigation() {
             selected={item.index === activeTab}
           >
             <div className="navigation_tab">
-              <IconButton mode='outline'>{item.icon}</IconButton>
-              <span className="navigation_label">{item.label}</span>
+              <span className="navigation_icon">{item.icon}</span>
             </div>
           </TabsItem>
         ))}
