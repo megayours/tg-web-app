@@ -7,9 +7,11 @@ import "./styles.css";
 import { useTranslations } from 'next-intl';
 import UserButtons from "@/libs/chromia-connect/user-buttons";
 import { useEffect } from 'react';
+import { CONTRACTS } from "@/config/contracts";
+import { Address } from "viem";
 
 const NotRegistered = () => {
-  const { mint, isMinting, isMinted, isReady, error } = useMintNFT();
+  const { mint, isMinting, isMinted, isReady, error } = useMintNFT(CONTRACTS.MEGA_NFT.address as Address);
   const { data: hasAccount } = useAccountPolling(isMinted);
   const t = useTranslations('pages.notRegistered');
 

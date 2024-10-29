@@ -1,11 +1,14 @@
 'use client';
 
-import { List } from '@telegram-apps/telegram-ui';
+import { List, Button, Text } from '@telegram-apps/telegram-ui';
 import { Page } from '@/components/Page';
-import { Avatar, BaseToken, useAllArmor, useAllAvatars, useAllWeapons, useEquippedAvatar } from '@/hooks/useDappApi';
+import { BaseToken, useAllArmor, useAllAvatars, useAllWeapons, useEquippedAvatar } from '@/hooks/useDappApi';
 import './styles.css';
 import { useState, useEffect } from 'react';
 import EquipmentSection from './EquipmentSection';
+import { useMintNFT } from '@/hooks/useMintNFT';
+import { CONTRACTS } from '@/config/contracts';
+import { Address } from 'viem';
 
 const tokenKey = (token: BaseToken) => `${token.project}-${token.collection}-${token.id}`;
 
@@ -26,6 +29,8 @@ const Profile = () => {
   const [selectedHandsId, setSelectedHandsId] = useState<string | null>(null);
   const [selectedLegsId, setSelectedLegsId] = useState<string | null>(null);
   const [selectedFeetsId, setSelectedFeetsId] = useState<string | null>(null);
+
+  const { mint, isMinting, isMinted, isReady, error } = useMintNFT(CONTRACTS.EQUIPMENT.address as Address);
 
   useEffect(() => {
     if (equippedAvatar && !selectedAvatarId) {
@@ -84,6 +89,28 @@ const Profile = () => {
           onSelect={setSelectedFeetsId}
         />
       </List>
+      
+      <div className="profile_purchaseButton">
+        <Button 
+          onClick={mint}
+          disabled={!isReady || isMinting}
+          loading={isMinting}
+        >
+          {isMinting ? 'Purchasing...' : 'Purchase Equipment'}
+        </Button>
+        
+        {error && (
+          <Text Component="p" style={{ color: 'var(--tg-theme-destructive-text-color)', marginTop: '8px' }}>
+            {error}
+          </Text>
+        )}
+        
+        {isMinted && (
+          <Text Component="p" style={{ color: 'var(--tg-theme-link-color)', marginTop: '8px' }}>
+            Equipment purchased successfully! It will be available in a few mintes.
+          </Text>
+        )}
+      </div>
     </Page>
   );
 }

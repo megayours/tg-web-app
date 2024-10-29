@@ -4,16 +4,15 @@ import { CONTRACTS } from '../config/contracts';
 import { type Address } from 'viem';
 import { polygonAmoy } from '@/config/networks';
 
-export function useMintNFT() {
+export function useMintNFT(contractAddress: Address) {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
-  const config = useConfig();
 
   const isCorrectChain = chainId === polygonAmoy.id;
 
   const { data: simulateData, error: simulateError } = useSimulateContract({
-    address: CONTRACTS.MEGA_NFT.address as Address,
+    address: contractAddress,
     abi: CONTRACTS.MEGA_NFT.abi,
     functionName: 'mint',
     args: [address as Address],

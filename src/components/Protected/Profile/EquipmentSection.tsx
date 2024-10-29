@@ -10,7 +10,7 @@ interface EquipmentSectionProps {
 
 const EquipmentSection = ({ title, items, selectedId, onSelect }: EquipmentSectionProps) => {
   const tokenKey = (token: BaseToken) => `${token.project}-${token.collection}-${token.id}`;
-
+  console.log(items);
   return (
     <Section header={title}>
       <form>

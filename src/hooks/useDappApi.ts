@@ -70,6 +70,8 @@ export function useAllAvatars() {
       const avatars = await chromiaSession.query<Avatar[]>('dapp.get_avatars', {
         account_id: chromiaSession.account.id,
       });
+
+      console.log('avatars', avatars);
       
       return avatars.map(avatar => ({
         ...avatar,
