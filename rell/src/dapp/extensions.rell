@@ -10,22 +10,49 @@ function on_external_create(token: yours.token, attributes: map<text, gtv>) {
 function _create_avatar(token: yours.token, attributes: map<text, gtv>) {
   val avatar = avatar @? { token };
   if (avatar == null) {
-    create avatar(token, description = text.from_gtv(attributes["description"]), image = text.from_gtv(attributes["image"]));
+    val description_gtv = attributes.get_or_null("description");
+    val description = if (description_gtv != null) text.from_gtv(description_gtv) else "";
+
+    val image_gtv = attributes.get_or_null("image");
+    val image = if (image_gtv != null) text.from_gtv(image_gtv) else "";
+    create avatar(token, description, image);
   }
 }
 
 function _create_equipment(token: yours.token, attributes: map<text, gtv>) {
   var equipment = equipment @? { token };
   if (equipment == null) {
-    val slot = text.from_gtv(attributes["slot"]);
-    val weight = integer.from_gtv(attributes["weight"]);
-    val description = text.from_gtv(attributes["description"]);
-    val image = text.from_gtv(attributes["image"]);
+    val slot_gtv = attributes.get_or_null("slot");
+    if (slot_gtv == null) return;
+    val slot = text.from_gtv(slot_gtv);
+
+    val weight_gtv = attributes.get_or_null("weight");
+    if (weight_gtv == null) return;
+    val weight = integer.from_gtv(weight_gtv);
+
+    val description_gtv = attributes.get_or_null("description");
+    if (description_gtv == null) return;
+    val description = text.from_gtv(description_gtv);
+
+    val image_gtv = attributes.get_or_null("image");
+    if (image_gtv == null) return;
+    val image = text.from_gtv(image_gtv);
+
     equipment = create equipment(token, slot, weight, description, image);
 
     when (slot) {
-      "head", "chest", "hands", "legs", "feets" -> create armor(equipment, defense = integer.from_gtv(attributes["defense"]));
-      "weapon" -> create weapon(equipment, damage = integer.from_gtv(attributes["damage"]));
+      "head", "chest", "hands", "legs", "feets" -> {
+        val defense_gtv = attributes.get_or_null("defense");
+        if (defense_gtv == null) return;
+        val defense = integer.from_gtv(defense_gtv);
+        create armor(equipment, defense);
+      };
+      "weapon" -> {
+        val damage_gtv = attributes.get_or_null("damage");
+        if (damage_gtv == null) return;
+        val damage = integer.from_gtv(damage_gtv);
+        create weapon(equipment, damage);
+      };
       else -> return;
     }
   }

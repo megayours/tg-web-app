@@ -13,14 +13,14 @@ import { Address } from 'viem';
 const tokenKey = (token: BaseToken) => `${token.project}-${token.collection}-${token.id}`;
 
 const Profile = () => {
-  const { data: avatars, isLoading } = useAllAvatars();
+  const { data: avatars, isLoading: isLoadingAvatars } = useAllAvatars();
   const { data: equippedAvatar } = useEquippedAvatar();
-  const { data: weapons } = useAllWeapons();
-  const { data: heads } = useAllArmor('head');
-  const { data: chests } = useAllArmor('chest');
-  const { data: hands } = useAllArmor('hands');
-  const { data: legs } = useAllArmor('legs');
-  const { data: feets } = useAllArmor('feets');
+  const { data: weapons, isLoading: isLoadingWeapons } = useAllWeapons();
+  const { data: heads, isLoading: isLoadingHeads } = useAllArmor('head');
+  const { data: chests, isLoading: isLoadingChests } = useAllArmor('chest');
+  const { data: hands, isLoading: isLoadingHands } = useAllArmor('hands');
+  const { data: legs, isLoading: isLoadingLegs } = useAllArmor('legs');
+  const { data: feets, isLoading: isLoadingFeets } = useAllArmor('feets');
 
   const [selectedAvatarId, setSelectedAvatarId] = useState<string | null>(null);
   const [selectedWeaponId, setSelectedWeaponId] = useState<string | null>(null);
@@ -39,7 +39,7 @@ const Profile = () => {
     }
   }, [equippedAvatar, selectedAvatarId]);
 
-  if (isLoading) {
+  if (isLoadingAvatars || isLoadingWeapons || isLoadingHeads || isLoadingChests || isLoadingHands || isLoadingLegs || isLoadingFeets) {
     return <div>Loading...</div>;
   }
 
@@ -59,25 +59,25 @@ const Profile = () => {
           onSelect={setSelectedWeaponId}
         />
         <EquipmentSection
-          title="Head"  
+          title="Head"
           items={heads as BaseToken[]}
           selectedId={selectedHeadId}
           onSelect={setSelectedHeadId}
         />
         <EquipmentSection
-          title="Chest"  
+          title="Chest"
           items={chests as BaseToken[]}
           selectedId={selectedChestId}
           onSelect={setSelectedChestId}
         />
         <EquipmentSection
-          title="Hands"  
+          title="Hands"
           items={hands as BaseToken[]}
           selectedId={selectedHandsId}
           onSelect={setSelectedHandsId}
         />
         <EquipmentSection
-          title="Legs"  
+          title="Legs"
           items={legs as BaseToken[]}
           selectedId={selectedLegsId}
           onSelect={setSelectedLegsId}
@@ -106,9 +106,12 @@ const Profile = () => {
         )}
         
         {isMinted && (
-          <Text Component="p" style={{ color: 'var(--tg-theme-link-color)', marginTop: '8px' }}>
-            Equipment purchased successfully! It will be available in a few mintes.
-          </Text>
+          <>
+            <br />
+            <Text Component="p" style={{ color: 'var(--tg-theme-link-color)', marginTop: '8px' }}>
+              Equipment purchased successfully! It will be available in a few mintes.
+            </Text>
+          </>
         )}
       </div>
     </Page>

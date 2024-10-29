@@ -95,8 +95,6 @@ export function useEquippedEquipment() {
       const equipments = await chromiaSession.query<(Armor | Weapon)[]>('dapp.get_equipped_equipment', {
         account_id: chromiaSession.account.id,
       });
-
-      console.log(`equipped for account ${chromiaSession.account.id.toString('hex')}:`, equipments);
       
       return equipments.map((equipment: Armor | Weapon) => ({
         ...equipment,
@@ -117,10 +115,14 @@ export function useAllArmor(slot: string) {
         throw new Error('Not connected to Chromia');
       }
 
+      console.log('slot', slot);
+      console.log('account_id', chromiaSession.account.id.toString('hex'));
       const armors = await chromiaSession.query<Armor[]>('dapp.get_armor', {
         account_id: chromiaSession.account.id,
         slot,
       });
+
+      console.log('armors', armors);
       
       return armors.map(armor => ({
         ...armor,
@@ -144,6 +146,8 @@ export function useAllWeapons() {
       const weapons = await chromiaSession.query<Weapon[]>('dapp.get_weapon', {
         account_id: chromiaSession.account.id,
       });
+
+      console.log('weapons', weapons);
       
       return weapons.map(weapon => ({
         ...weapon,
