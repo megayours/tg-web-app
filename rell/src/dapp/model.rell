@@ -1,9 +1,37 @@
 entity avatar {
   key yours.token;
+  description: text;
   image: text;
 }
 
 entity equipped_avatar {
   key ft4.accounts.account;
   index avatar;
+}
+
+enum tool_type {
+  fishing_rod,
+}
+
+entity equipment {
+  key yours.token;
+  index slot: text;
+  weight: integer;
+  image: text;
+  description: text;
+}
+
+entity weapon {
+  key equipment;
+  damage: integer;
+}
+
+entity armor {
+  key equipment;
+  defense: integer;
+}
+
+entity equipped_equipment {
+  key ft4.accounts.account, slot: text;
+  index equipment;
 }
