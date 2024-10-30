@@ -1,5 +1,6 @@
 import { useChromia } from '@/libs/chromia-connect/chromia-context';
-import { useQuery } from '@tanstack/react-query';
+import { nop, op } from '@chromia/ft4';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export type BaseToken = {
   project: string;
@@ -95,6 +96,8 @@ export function useEquippedEquipment() {
       const equipments = await chromiaSession.query<(Armor | Weapon)[]>('dapp.get_equipped_equipment', {
         account_id: chromiaSession.account.id,
       });
+
+      console.log('equipped equipment', equipments);
       
       return equipments.map((equipment: Armor | Weapon) => ({
         ...equipment,
@@ -159,25 +162,154 @@ export function useAllWeapons() {
 }
 
 // Example of a mutation to equip an avatar
-// export function useEquipAvatar() {
-//   const { chromiaSession, chromiaClient } = useChromia();
-//   const queryClient = useQueryClient();
+export function useEquipAvatar() {
+  const { chromiaSession, chromiaClient } = useChromia();
+  const queryClient = useQueryClient();
 
-//   return useMutation({
-//     mutationFn: async (avatarId: string) => {
-//       if (!chromiaClient || !chromiaSession) {
-//         throw new Error('Not connected to Chromia');
-//       }
+  return useMutation({
+    mutationFn: async ({ project, collection, tokenId }: { 
+      project: string; 
+      collection: string; 
+      tokenId: number; 
+    }) => {
+      if (!chromiaClient || !chromiaSession) {
+        throw new Error('Not connected to Chromia');
+      }
 
-//       await chromiaClient.operation('equip_avatar', {
-//         session: chromiaSession,
-//         avatar_id: avatarId,
-//       });
-//     },
-//     onSuccess: () => {
-//       // Invalidate relevant queries after successful mutation
-//       queryClient.invalidateQueries({ queryKey: ['equipped_avatar'] });
-//       queryClient.invalidateQueries({ queryKey: ['all_avatars'] });
-//     },
-//   });
-// }
+      await chromiaSession.transactionBuilder()
+        .add(op('dapp.equip_avatar', project, collection, tokenId))
+        .add(nop())
+        .buildAndSend();
+    },
+    onSuccess: () => {
+      // Invalidate relevant queries after successful mutation
+      queryClient.invalidateQueries({ queryKey: ['equipped_avatar'] });
+      queryClient.invalidateQueries({ queryKey: ['all_avatars'] });
+    },
+  });
+}
+
+export function useEquipEquipment() {
+  const { chromiaSession, chromiaClient } = useChromia();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ project, collection, tokenId }: { 
+      project: string; 
+      collection: string; 
+      tokenId: number; 
+    }) => {
+      if (!chromiaClient || !chromiaSession) {
+        throw new Error('Not connected to Chromia');
+      }
+
+      await chromiaSession.transactionBuilder()
+        .add(op('dapp.equip_equipment', project, collection, tokenId))
+        .add(nop())
+        .buildAndSend();
+    },
+    onSuccess: () => {
+      // Invalidate relevant queries after successful mutation
+      queryClient.invalidateQueries({ queryKey: ['equipped_equipment'] });
+      queryClient.invalidateQueries({ queryKey: ['all_armor'] });
+      queryClient.invalidateQueries({ queryKey: ['all_weapons'] });
+    },
+  });
+}
+
+export function useIsInBattleQueue() {
+  const { chromiaSession, chromiaClient, authStatus } = useChromia();
+
+  return useQuery({
+    queryKey: ['is_in_battle_queue'],
+    queryFn: async () => {
+      if (!chromiaClient || !chromiaSession) {
+        throw new Error('Not connected to Chromia');
+      }
+
+      const isInQueue = await chromiaSession.query<boolean>('dapp.is_queued_for_battle', {
+        account_id: chromiaSession.account.id,
+      });
+      
+      return isInQueue;
+    },
+    enabled: Boolean(chromiaClient) && Boolean(chromiaSession) && authStatus === 'connected',
+  });
+}
+
+export type Contender = {
+  project: string;
+  collection: string;
+  token_id: number;
+}
+
+export type BattleHistory = {
+  avatar: Contender;
+  opponent: Contender;
+  won: boolean;
+  timestamp: number;
+}
+
+export function useBattleHistory() {
+  const { chromiaSession, chromiaClient, authStatus } = useChromia();
+
+  return useQuery({
+    queryKey: ['battle_history'],
+    queryFn: async () => {
+      if (!chromiaClient || !chromiaSession) {
+        throw new Error('Not connected to Chromia');
+      }
+
+      const battleHistory = await chromiaSession.query<BattleHistory[]>('dapp.get_battle_history', {
+        account_id: chromiaSession.account.id,
+      });
+      
+      return battleHistory;
+    },
+    enabled: Boolean(chromiaClient) && Boolean(chromiaSession) && authStatus === 'connected',
+  });
+}
+
+export function useDequeueForBattle() {
+  const { chromiaSession, chromiaClient } = useChromia();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      if (!chromiaClient || !chromiaSession) {
+        throw new Error('Not connected to Chromia');
+      }
+
+      await chromiaSession.transactionBuilder()
+        .add(op('dapp.cancel_battle_queue'))
+        .add(nop())
+        .buildAndSend();
+    },
+    onSuccess: () => {
+      // Invalidate relevant queries after successful mutation
+      queryClient.invalidateQueries({ queryKey: ['is_in_battle_queue'] });
+    },
+  });
+}
+export function useQueueForBattle() {
+  const { chromiaSession, chromiaClient } = useChromia();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      if (!chromiaClient || !chromiaSession) {
+        throw new Error('Not connected to Chromia');
+      }
+
+      await chromiaSession.transactionBuilder()
+        .add(op('dapp.queue_for_battle'))
+        .add(nop())
+        .buildAndSend();
+    },
+    onSuccess: () => {
+      // Invalidate relevant queries after successful mutation
+      queryClient.invalidateQueries({ queryKey: ['is_in_battle_queue'] });
+      queryClient.invalidateQueries({ queryKey: ['battle_history'] });
+    },
+  });
+}

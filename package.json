@@ -7,7 +7,11 @@
     "dev:https": "next dev --experimental-https",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "node scripts/rell-tests.js",
+    "stop": "node scripts/stop-containers.js",
+    "start:network": "docker network create test_network",
+    "start:postgres": "docker run -e POSTGRES_DB=postchain -e POSTGRES_USER=postchain -e POSTGRES_PASSWORD=postchain --network test_network -p 5432:5432 -d --name postgres postgres:14.1-alpine"
   },
   "dependencies": {
     "@chromia/ft4": "^1.0.1",
@@ -36,6 +40,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "dotenv": "^16.4.5",
     "eslint": "^8",
     "eslint-config-next": "14.2.4",
     "postcss": "^8",

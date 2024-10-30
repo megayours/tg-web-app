@@ -1,0 +1,65 @@
+@test module;
+
+import ^.test_ops;
+import dapp;
+
+import lib.ft4.test.utils.{ ft_auth_operation_for };
+
+function test_give_avatar() {
+  val keypair1 = rell.test.keypairs.alice;
+  rell.test.tx()
+    .op(test_ops.give_avatar("test", "test", 1, "Test Avatar", keypair1.pub))
+    .run();
+}
+
+function test_battle() {
+  val keypair1 = rell.test.keypairs.alice;
+  val keypair2 = rell.test.keypairs.bob;
+
+  rell.test.set_block_interval(10);
+  rell.test.tx()
+    .op(test_ops.give_avatar("test", "test", 1, "Test Avatar 1", keypair1.pub))
+    .op(test_ops.give_avatar("test", "test", 2, "Test Avatar 2", keypair2.pub))
+    .nop()
+    .run();
+
+  rell.test.tx()
+    .op(ft_auth_operation_for(keypair1.pub))
+    .op(dapp.equip_avatar(project = "test", collection = "test", token_id = 1))
+    .nop()
+    .sign(keypair1)
+    .run();
+
+  rell.test.tx()
+    .op(ft_auth_operation_for(keypair2.pub))
+    .op(dapp.equip_avatar(project = "test", collection = "test", token_id = 2))
+    .nop()
+    .sign(keypair2)
+    .run();
+
+  rell.test.set_block_interval(1000);
+  rell.test.tx()
+    .op(ft_auth_operation_for(keypair1.pub))
+    .op(dapp.queue_for_battle())
+    .nop()
+    .sign(keypair1)
+    .run();
+
+  rell.test.tx()
+    .op(ft_auth_operation_for(keypair2.pub))
+    .op(dapp.queue_for_battle())
+    .nop()
+    .sign(keypair2)
+    .run();
+
+  val battle_history1 = require(dapp.battle_history_winner @? { .account.id == keypair1.pub } limit 1);
+  val battle_history2 = require(dapp.battle_history_winner @? { .account.id == keypair2.pub } limit 1);
+
+  assert_equals(battle_history1.me.token.name, "Test Avatar 1");
+  assert_equals(battle_history2.me.token.name, "Test Avatar 2");
+  assert_equals(battle_history1.contestant.token.name, "Test Avatar 2");
+  assert_equals(battle_history2.contestant.token.name, "Test Avatar 1");
+  assert_false(battle_history1.won);
+  assert_true(battle_history2.won);
+  assert_equals(battle_history1.timestamp, battle_history2.timestamp);
+}

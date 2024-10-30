@@ -2,7 +2,7 @@
 
 import { List, Button, Text } from '@telegram-apps/telegram-ui';
 import { Page } from '@/components/Page';
-import { BaseToken, useAllArmor, useAllAvatars, useAllWeapons, useEquippedAvatar } from '@/hooks/useDappApi';
+import { BaseToken, useAllArmor, useAllAvatars, useAllWeapons, useEquipAvatar, useEquipEquipment, useEquippedAvatar, useEquippedEquipment } from '@/hooks/useDappApi';
 import './styles.css';
 import { useState, useEffect } from 'react';
 import EquipmentSection from './EquipmentSection';
@@ -13,14 +13,19 @@ import { Address } from 'viem';
 const tokenKey = (token: BaseToken) => `${token.project}-${token.collection}-${token.id}`;
 
 const Profile = () => {
-  const { data: avatars, isLoading: isLoadingAvatars } = useAllAvatars();
   const { data: equippedAvatar } = useEquippedAvatar();
+  const { data: equippedEquipment } = useEquippedEquipment();
+
+  const { data: avatars, isLoading: isLoadingAvatars } = useAllAvatars();
   const { data: weapons, isLoading: isLoadingWeapons } = useAllWeapons();
   const { data: heads, isLoading: isLoadingHeads } = useAllArmor('head');
   const { data: chests, isLoading: isLoadingChests } = useAllArmor('chest');
   const { data: hands, isLoading: isLoadingHands } = useAllArmor('hands');
   const { data: legs, isLoading: isLoadingLegs } = useAllArmor('legs');
   const { data: feets, isLoading: isLoadingFeets } = useAllArmor('feets');
+
+  const { mutate: equipAvatar } = useEquipAvatar();
+  const { mutate: equipEquipment } = useEquipEquipment();
 
   const [selectedAvatarId, setSelectedAvatarId] = useState<string | null>(null);
   const [selectedWeaponId, setSelectedWeaponId] = useState<string | null>(null);
@@ -39,9 +44,51 @@ const Profile = () => {
     }
   }, [equippedAvatar, selectedAvatarId]);
 
+  useEffect(() => {
+    if (equippedEquipment) {
+      for (const equipment of equippedEquipment) {
+        const key = tokenKey(equipment as BaseToken);
+        console.log('Checking equipment', equipment);
+        switch (equipment.slot) {
+          case 'weapon': setSelectedWeaponId(key); break;
+          case 'head': setSelectedHeadId(key); break;
+          case 'chest': setSelectedChestId(key); break;
+          case 'hands': setSelectedHandsId(key); break;
+          case 'legs': setSelectedLegsId(key); break;
+          case 'feets': setSelectedFeetsId(key); break;
+        }
+      }
+    }
+  }, [equippedEquipment, setSelectedWeaponId, setSelectedHeadId, setSelectedChestId, setSelectedHandsId, setSelectedLegsId, setSelectedFeetsId]);
+
   if (isLoadingAvatars || isLoadingWeapons || isLoadingHeads || isLoadingChests || isLoadingHands || isLoadingLegs || isLoadingFeets) {
     return <div>Loading...</div>;
   }
+
+  const handleEquipAvatar = (avatarId: string) => {
+    if (avatarId) {
+      const [project, collection, tokenId] = avatarId.split('-');
+      setSelectedAvatarId(avatarId);
+      equipAvatar({ project, collection, tokenId: parseInt(tokenId) });
+    }
+  };
+
+  const handleEquipEquipment = (equipmentId: string, slot: string) => {
+    if (equipmentId && slot) {
+      const [project, collection, tokenId] = equipmentId.split('-');
+
+      switch (slot) {
+        case 'weapon': setSelectedWeaponId(equipmentId); break;
+        case 'head': setSelectedHeadId(equipmentId); break;
+        case 'chest': setSelectedChestId(equipmentId); break;
+        case 'hands': setSelectedHandsId(equipmentId); break;
+        case 'legs': setSelectedLegsId(equipmentId); break;
+        case 'feets': setSelectedFeetsId(equipmentId); break;
+      }
+
+      equipEquipment({ project, collection, tokenId: parseInt(tokenId) });
+    }
+  };
 
   return (
     <Page>
@@ -50,43 +97,43 @@ const Profile = () => {
           title="Avatar"
           items={avatars}
           selectedId={selectedAvatarId}
-          onSelect={setSelectedAvatarId}
+          onSelect={handleEquipAvatar}
         />
         <EquipmentSection
           title="Weapons"
           items={weapons as BaseToken[]}
           selectedId={selectedWeaponId}
-          onSelect={setSelectedWeaponId}
+          onSelect={(id) => handleEquipEquipment(id, 'weapon')}
         />
         <EquipmentSection
           title="Head"
           items={heads as BaseToken[]}
           selectedId={selectedHeadId}
-          onSelect={setSelectedHeadId}
+          onSelect={(id) => handleEquipEquipment(id, 'head')}
         />
         <EquipmentSection
           title="Chest"
           items={chests as BaseToken[]}
           selectedId={selectedChestId}
-          onSelect={setSelectedChestId}
+          onSelect={(id) => handleEquipEquipment(id, 'chest')}
         />
         <EquipmentSection
           title="Hands"
           items={hands as BaseToken[]}
           selectedId={selectedHandsId}
-          onSelect={setSelectedHandsId}
+          onSelect={(id) => handleEquipEquipment(id, 'hands')}
         />
         <EquipmentSection
           title="Legs"
           items={legs as BaseToken[]}
           selectedId={selectedLegsId}
-          onSelect={setSelectedLegsId}
+          onSelect={(id) => handleEquipEquipment(id, 'legs')}
         />
         <EquipmentSection
           title="Feets"  
           items={feets as BaseToken[]}
           selectedId={selectedFeetsId}
-          onSelect={setSelectedFeetsId}
+          onSelect={(id) => handleEquipEquipment(id, 'feets')}
         />
       </List>
       

@@ -19,7 +19,12 @@ function _avatar_dto(avatar) {
 }
 
 query get_equipped_avatar(account_id: byte_array) {
-  return equipped_avatar @? { .account.id == account_id } ( _avatar_dto($.avatar) );
+  val avatar = _get_equipped_avatar(account_id);
+  return if (avatar != null) _avatar_dto(avatar) else null;
+}
+
+function _get_equipped_avatar(account_id: byte_array) {
+  return equipped_avatar @? { .account.id == account_id } ( .avatar );
 }
 
 query get_avatars(account_id: byte_array) {
@@ -37,6 +42,7 @@ struct armor_dto {
   name: text;
   description: text;
   image: text;
+  slot: text;
   weight: integer;
   defense: integer;
 }
@@ -49,6 +55,7 @@ struct weapon_dto {
   name: text;
   description: text;
   image: text;
+  slot: text;
   weight: integer;
   damage: integer;
 }
@@ -61,6 +68,7 @@ function _armor_dto(armor) {
     name = armor.equipment.token.name,
     description = armor.equipment.description,
     image = armor.equipment.image,
+    slot = armor.equipment.slot,
     weight = armor.equipment.weight,
     defense = armor.defense
   );
@@ -74,6 +82,7 @@ function _weapon_dto(weapon) {
     name = weapon.equipment.token.name,
     description = weapon.equipment.description,
     image = weapon.equipment.image,
+    slot = weapon.equipment.slot,
     weight = weapon.equipment.weight,
     damage = weapon.damage
   );
@@ -82,14 +91,14 @@ function _weapon_dto(weapon) {
 query get_equipped_equipment(account_id: byte_array) {
   val equipments = list<gtv>();
 
-  (e: equipped_equipment, a: armor) @? { 
+  (e: equipped_equipment, a: armor) @* { 
     e.account.id == account_id,
     e.equipment == a.equipment } ( equipments.add(_armor_dto(a).to_gtv_pretty()) );
 
-  (e: equipped_equipment, w: weapon) @? { 
+  (e: equipped_equipment, w: weapon) @* { 
     e.account.id == account_id,
     e.equipment == w.equipment
-  } ( equipments.add(_weapon_dto(w).to_gtv_pretty()) );
+  } ( equipments.add(_weapon_dto(w).to_gtv_pretty()) ) limit 1;
 
   return equipments;
 }

@@ -1,0 +1,28 @@
+operation give_avatar(project: text, collection: text, id: integer, name: text, pubkey: byte_array) {
+  val spec = yours.token_info(
+    project = yours.project_info(project, chain_context.blockchain_rid),
+    collection = collection,
+    type = yours.token_type.yours,
+    name,
+    modules = []
+  );
+
+  val token = yours.create_token_with_id(spec, id);
+  create dapp.avatar(token, description = "Test Description", image = "https://example.com/image.png");
+
+  var account = ft4.accounts.account @? { .id == pubkey } limit 1;
+  if (account == null) {
+    account = ft4.accounts.create_account_with_auth(
+      ft4.accounts.auth_descriptor(
+        rules = ft4.accounts.GTV_NULL,
+        auth_type = ft4.accounts.auth_type.S,
+        args = [
+          ["A", "T"].to_gtv(),
+          pubkey.to_gtv()
+        ]
+      ),
+      pubkey
+    );
+  }
+  yours.mint(token, yours.balance_info(account, 1));
+}

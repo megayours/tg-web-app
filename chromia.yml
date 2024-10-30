@@ -19,6 +19,11 @@ blockchains:
             - bc-rid: x"0C034CAB6586CD4F38EAF56721905BA388762906CA75C0C67650F9AB2E69C7BC"
               topic: 'L_yours_external_amoy_8d3a7c58f5b90b669e076ae4b01247c1561559b5'
 
+test:
+  modules:
+    - main
+    - tests.battle
+
 libs:
   ft4:
     registry: https://gitlab.com/chromaway/ft4-lib.git

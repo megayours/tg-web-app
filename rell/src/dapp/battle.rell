@@ -1,0 +1,201 @@
+struct opponent {
+  avatar: avatar;
+  health: integer;
+  defense: integer;
+  damage: integer;
+  weight: integer;
+}
+
+struct round_input {
+  damage: integer;
+}
+
+struct submission_card {
+  project: text;
+  collection: text;
+  token_id: integer;
+}
+
+entity battle_queue {
+  key ft4.accounts.account;
+}
+
+entity battle_history_winner {
+  index ft4.accounts.account;
+  me: avatar;
+  contestant: avatar;
+  won: boolean;
+  timestamp: timestamp;
+}
+
+query is_queued_for_battle(account_id: byte_array): boolean {
+  return (battle_queue @? { .account.id == account_id } limit 1) != null;
+}
+
+operation queue_for_battle() {
+  val my_account = ft4.auth.authenticate();
+  val my_avatar = require(get_equipped_avatar(my_account.id));
+  val contender_queue_entry = battle_queue @? {} ( .account ) limit 1;
+
+  if (contender_queue_entry == null) {
+    create battle_queue(my_account);
+  } else {
+    val other_contender = get_opponent(contender_queue_entry.id);
+    val my_contender = get_opponent(my_account.id);
+    val winner = determine_winner(other_contender, my_contender);
+    if (winner.avatar == my_contender.avatar) {
+      create battle_history_winner(my_account, me = my_contender.avatar, contestant = other_contender.avatar, won = true, timestamp = op_context.last_block_time);
+      create battle_history_winner(contender_queue_entry, me = other_contender.avatar, contestant = my_contender.avatar, won = false, timestamp = op_context.last_block_time);
+    } else {
+      create battle_history_winner(my_account, me = my_contender.avatar, contestant = other_contender.avatar, won = false, timestamp = op_context.last_block_time);
+      create battle_history_winner(contender_queue_entry, me = other_contender.avatar, contestant = my_contender.avatar, won = true, timestamp = op_context.last_block_time);
+    }
+
+    delete battle_queue @ { contender_queue_entry };
+  }
+}
+
+operation cancel_battle_queue() {
+  val my_account = ft4.auth.authenticate();
+  delete battle_queue @ { .account.id == my_account.id };
+}
+
+@extend(ft4.auth.auth_handler)
+function () = ft4.auth.add_auth_handler(
+  scope = rell.meta(queue_for_battle).mount_name,
+  flags = []
+);
+
+struct battle_history_dto {
+  avatar: submission_card;
+  opponent: submission_card;
+  won: boolean;
+  timestamp: timestamp;
+}
+
+query get_battle_history(account_id: byte_array) {
+  return battle_history_winner @* { .account.id == account_id } ( 
+    battle_history_dto(
+      avatar = submission_card(
+        project = .me.token.collection.project.name,
+        collection = .me.token.collection.name,
+        token_id = .me.token.id
+      ),
+      opponent = submission_card(
+        project = .contestant.token.collection.project.name,
+        collection = .contestant.token.collection.name,
+        token_id = .contestant.token.id
+      ),
+      won = .won,
+      timestamp = .timestamp
+    )
+  );
+}
+
+function get_opponent(account_id: byte_array): opponent {
+  val health = 100;
+  val armors = (e: equipped_equipment, a: armor) @* { 
+    e.account.id == account_id,
+    e.equipment == a.equipment } ( _armor_dto(a) );
+
+  val weapons = (e: equipped_equipment, w: weapon) @* { 
+    e.account.id == account_id,
+    e.equipment == w.equipment
+  } ( _weapon_dto(w) );
+  
+  val defense = armors @? {} ( @sum(.defense )) ?: 0;
+
+  val armor_weight = armors @? {} ( @sum(.weight )) ?: 0;
+  val weapon_weight = weapons @? {} ( @sum(.weight )) ?: 0;
+  val weight = armor_weight + weapon_weight;
+
+  val damage = weapons @? {} ( @sum(.damage )) ?: 3;
+
+  val avatar = require(_get_equipped_avatar(account_id));
+  
+  return opponent(avatar = avatar, health = health, defense = defense, damage = damage, weight = weight);
+}
+
+function determine_winner(opponent1: opponent, opponent2: opponent): opponent {
+    // Fetch necessary blockchain data
+    val block_height = op_context.block_height;
+    val previous_block_timestamp = op_context.last_block_time;
+    val transaction_hash = op_context.transaction.tx_hash;
+    val transaction_rid = op_context.transaction.tx_rid;
+    
+    // Generate a random seed by combining these values
+    val seed = sha256(previous_block_timestamp.to_hex().to_bytes() + transaction_hash + transaction_rid);
+    var seed_index = 0;
+
+    // Calculate adjusted stats for each opponent using the random seed
+    var round_input1 = adjust_stats(opponent1, seed, seed_index);
+    var round_input2 = adjust_stats(opponent2, seed, seed_index);
+
+    var opponent1_health = opponent1.health;
+    var opponent2_health = opponent2.health;
+
+    // Battle simulation loop
+    while (opponent1_health > 0 and opponent2_health > 0) {
+      // Make weight penalties more impactful for realistic weight ranges (1-30)
+        val weight_penalty1 = opponent1.weight * 2; // 20% penalty per weight point
+        val weight_penalty2 = opponent2.weight * 2;
+        
+        // Add randomness to the base damage before applying penalties
+        val base_damage1 = round_input1.damage * (0.8 + (seed[seed_index % seed.size()] % 5) * 0.1);
+        val base_damage2 = round_input2.damage * (0.8 + (seed[(seed_index + 1) % seed.size()] % 5) * 0.1);
+        
+        // Calculate effective damage with more randomness
+        val effective_damage1 = max(1, integer(base_damage1 - opponent2.defense - weight_penalty1));
+        val effective_damage2 = max(1, integer(base_damage2 - opponent1.defense - weight_penalty2));
+        
+        // Add critical hit chance (10% chance for 50% extra damage)
+        val damage_to_opponent2 = if (seed[(seed_index + 2) % seed.size()] % 10 == 0) 
+            integer(effective_damage1 * 1.5) else effective_damage1;
+        val damage_to_opponent1 = if (seed[(seed_index + 3) % seed.size()] % 10 == 0) 
+            integer(effective_damage2 * 1.5) else effective_damage2;
+        
+        // Apply damages
+        opponent1_health -= damage_to_opponent1;
+        opponent2_health -= damage_to_opponent2;
+
+        log("\n================================= Round Stats =================================");
+        log("Opponent 1 (Weight: %s, Penalty: %s)".format(opponent1.weight, weight_penalty1));
+        log("Opponent 2 (Weight: %s, Penalty: %s)".format(opponent2.weight, weight_penalty2));
+        log("Opponent 1 base damage: %s, effective: %s, final: %s".format(base_damage1, effective_damage1, damage_to_opponent2));
+        log("Opponent 2 base damage: %s, effective: %s, final: %s".format(base_damage2, effective_damage2, damage_to_opponent1));
+        log("---------------------------------------------------------------------------------");
+        log("Opponent 1 health: %s".format(opponent1_health));
+        log("Opponent 2 health: %s".format(opponent2_health));
+        log("===============================================================================\n");
+
+        // Update seed index and adjust stats
+        seed_index = (seed_index + 4) % seed.size(); // Skip ahead by 4 since we used 4 random values
+        round_input1 = adjust_stats(opponent1, seed, seed_index);
+        round_input2 = adjust_stats(opponent2, seed, seed_index + 1);
+    }
+
+    // More fair tiebreaker logic
+    if (opponent1_health > opponent2_health) {
+        return opponent1;
+    } else if (opponent2_health > opponent1_health) {
+        return opponent2;
+    } else {
+        // In case of exact tie, use weight as tiebreaker (favor lighter opponent)
+        return if (opponent1.weight < opponent2.weight) opponent1 else opponent2;
+    }
+}
+
+// Helper function to adjust stats based on the seed
+function adjust_stats(opponent: opponent, seed: byte_array, seed_index: integer): round_input {
+  val seed_selection = seed[seed_index % seed.size()];
+    log("Seed selection: " + seed_selection);
+    
+    // Increase randomness range (-30% to +30% damage variation)
+    val rand_factor = (seed_selection % 60) - 30; // random factor between -30 and +30
+    log("Random factor: " + rand_factor);
+    
+    val adjusted_damage = max(1, integer(opponent.damage * (1 + rand_factor / 100.0))); // percentage adjustment
+    log("Adjusted damage: " + adjusted_damage);
+    
+    return round_input(damage = adjusted_damage);
+}
