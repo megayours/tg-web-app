@@ -6,6 +6,13 @@ struct opponent {
   weight: integer;
 }
 
+struct attributes_dto {
+  health: integer;
+  defense: integer;
+  damage: integer;
+  weight: integer;
+}
+
 struct round_input {
   damage: integer;
 }
@@ -28,6 +35,11 @@ entity battle_history_winner {
   contestant: avatar;
   won: boolean;
   timestamp: timestamp;
+}
+
+query get_attributes(account_id: byte_array): attributes_dto {
+  val stats = get_opponent(account_id);
+  return attributes_dto(health = stats.health, defense = stats.defense, damage = stats.damage, weight = stats.weight);
 }
 
 query is_queued_for_battle(account_id: byte_array): boolean {

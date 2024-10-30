@@ -1,6 +1,6 @@
 'use client';
 
-import { List, Button, Text } from '@telegram-apps/telegram-ui';
+import { List, Button, Text, Headline } from '@telegram-apps/telegram-ui';
 import { Page } from '@/components/Page';
 import { BaseToken, useAllArmor, useAllAvatars, useAllWeapons, useEquipAvatar, useEquipEquipment, useEquippedAvatar, useEquippedEquipment } from '@/hooks/useDappApi';
 import './styles.css';
@@ -10,6 +10,7 @@ import { useMintNFT } from '@/hooks/useMintNFT';
 import { CONTRACTS } from '@/config/contracts';
 import { Address } from 'viem';
 import { useAvatarAndEquipmentBackgroundRefresh } from '@/hooks/useBackgroundRefresh';
+import { AttributesCard } from '@/components/AttributesCard/AttributesCard';
 
 const tokenKey = (token: BaseToken) => `${token.project}-${token.collection}-${token.id}`;
 
@@ -116,6 +117,15 @@ const Profile = () => {
           onSelect={handleEquipAvatar}
           emptyMessage="No avatars available. Purchase an avatar to start your journey!"
         />
+        
+        <div className="profile_attributes">
+          <AttributesCard />
+        </div>
+        
+        <div className="profile_equipment">
+          <Headline>Equipment</Headline>
+          </div>
+
         <EquipmentSection
           title="Weapons"
           items={weapons as BaseToken[]}

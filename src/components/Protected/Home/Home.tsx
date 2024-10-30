@@ -7,6 +7,7 @@ import './styles.css';
 import { useSignal, initData } from '@telegram-apps/sdk-react';
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { AttributesCard } from '@/components/AttributesCard/AttributesCard';
 
 const Home = () => {
   const { data: equippedAvatar, isLoading: avatarLoading } = useEquippedAvatar();
@@ -61,6 +62,10 @@ const Home = () => {
         <LargeTitle>
           gm {initDataState?.user?.username || initDataState?.user?.firstName} 👋
         </LargeTitle>
+      </div>
+
+      <div className="home_attributes">
+        <AttributesCard />
       </div>
 
       <div className="home_battleSection">

@@ -23,6 +23,10 @@
   border: 2px solid var(--tg-theme-button-color);
 }
 
+.profile_equipment {
+  padding: 0 16px;
+}
+
 .profile_purchaseButton {
   padding: 16px;
   margin-top: 16px;
@@ -134,4 +138,8 @@
 
 .profile_purchaseButton {
   margin: 16px;
+}
+
+.profile_attributes {
+  padding: 0 16px 12px;
 }

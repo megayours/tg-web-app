@@ -100,8 +100,6 @@ export function useAllAvatars() {
       const avatars = await chromiaSession.query<Avatar[]>('dapp.get_avatars', {
         account_id: chromiaSession.account.id,
       });
-
-      console.log('avatars', avatars);
       
       return avatars.map(avatar => ({
         ...avatar,
@@ -242,7 +240,35 @@ export function useEquipEquipment() {
       queryClient.invalidateQueries({ queryKey: ['equipped_equipment'] });
       queryClient.invalidateQueries({ queryKey: ['all_armor'] });
       queryClient.invalidateQueries({ queryKey: ['all_weapons'] });
+      queryClient.invalidateQueries({ queryKey: ['attributes'] });
     },
+  });
+}
+
+export type Attributes = {
+  health: number;
+  defense: number;
+  damage: number;
+  weight: number;
+}
+
+export function useAttributes() {
+  const { chromiaSession, chromiaClient, authStatus } = useChromia();
+
+  return useQuery({
+    queryKey: ['attributes'],
+    queryFn: async () => {
+      if (!chromiaClient || !chromiaSession) {
+        throw new Error('Not connected to Chromia');
+      }
+
+      const attributes = await chromiaSession.query<Attributes>('dapp.get_attributes', {
+        account_id: chromiaSession.account.id,
+      });
+      
+      return attributes;
+    },
+    enabled: Boolean(chromiaClient) && Boolean(chromiaSession) && authStatus === 'connected',
   });
 }
 
