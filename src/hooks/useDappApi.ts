@@ -58,6 +58,35 @@ export function useEquippedAvatar() {
   });
 }
 
+export type LeaderboardEntry = {
+  avatar: Contender;
+  wins: number;
+}
+
+export function useLeaderboard() {
+  const { chromiaSession, chromiaClient, authStatus } = useChromia();
+
+  return useQuery({
+    queryKey: ['leaderboard'],
+    queryFn: async () => {
+      if (!chromiaClient || !chromiaSession) {
+        throw new Error('Not connected to Chromia');
+      }
+
+      const leaderboard = await chromiaSession.query<LeaderboardEntry[]>('dapp.get_leaderboard');
+      
+      return leaderboard.map(entry => ({
+        ...entry,
+        avatar: {
+          ...entry.avatar,
+          image: convertToGatewayUrl(entry.avatar.image)
+        }
+      }));
+    },
+    enabled: Boolean(chromiaClient) && Boolean(chromiaSession) && authStatus === 'connected',
+  });
+}
+
 export function useAllAvatars() {
   const { chromiaSession, chromiaClient, authStatus } = useChromia();
 
@@ -241,6 +270,8 @@ export type Contender = {
   project: string;
   collection: string;
   token_id: number;
+  name: string;
+  image: string;
 }
 
 export type BattleHistory = {

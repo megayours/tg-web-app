@@ -15,6 +15,13 @@ const NAVIGATION_ITEMS = [
   },
   {
     index: 1,
+    id: 'leaderboard',
+    label: 'Leaderboard',
+    view: 'leaderboard' as const,
+    icon: '🏆'
+  },
+  {
+    index: 2,
     id: 'profile',
     label: 'Profile',
     view: 'profile' as const,

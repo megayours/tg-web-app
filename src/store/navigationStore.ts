@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-type View = 'home' | 'profile'
+type View = 'home' | 'leaderboard' | 'profile'
 
 interface NavigationState {
   currentView: View

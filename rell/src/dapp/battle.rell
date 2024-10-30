@@ -10,10 +10,12 @@ struct round_input {
   damage: integer;
 }
 
-struct submission_card {
+struct opponent_details_card {
   project: text;
   collection: text;
   token_id: integer;
+  name: text;
+  image: text;
 }
 
 entity battle_queue {
@@ -73,25 +75,53 @@ function () = ft4.auth.add_auth_handler(
 );
 
 struct battle_history_dto {
-  avatar: submission_card;
-  opponent: submission_card;
+  avatar: opponent_details_card;
+  opponent: opponent_details_card;
   won: boolean;
   timestamp: timestamp;
+}
+
+struct leaderboard_entry {
+  avatar: opponent_details_card;
+  wins: integer;
+}
+
+query get_leaderboard(): list<leaderboard_entry> {
+  val entries = battle_history_winner @* { .won == true } (
+    @group avatar = .me, @sort_desc @sum wins = 1
+  ) limit 10;
+
+  return entries @* {} (
+    leaderboard_entry(
+      avatar = opponent_details_card(
+        project = .avatar.token.collection.project.name,
+        collection = .avatar.token.collection.name,
+        token_id = .avatar.token.id,
+        name = .avatar.token.name,
+        image = .avatar.image
+      ),
+      wins = .wins
+    )
+  );
 }
 
 query get_battle_history(account_id: byte_array) {
   return battle_history_winner @* { .account.id == account_id } (
     @sort_desc @omit .rowid,
     battle_history_dto(
-      avatar = submission_card(
+      avatar = opponent_details_card(
         project = .me.token.collection.project.name,
         collection = .me.token.collection.name,
-        token_id = .me.token.id
+        token_id = .me.token.id,
+        name = .me.token.name,
+        image = .me.image
       ),
-      opponent = submission_card(
+      opponent = opponent_details_card(
         project = .contestant.token.collection.project.name,
         collection = .contestant.token.collection.name,
-        token_id = .contestant.token.id
+        token_id = .contestant.token.id,
+        name = .contestant.token.name,
+        image = .contestant.image
       ),
       won = .won,
       timestamp = .timestamp
