@@ -9,7 +9,7 @@ export function withAuth<P extends object>(
 
     // Show loading state while checking auth
     if (isLoading) {
-      return <Loading />;
+      return <Loading message="Authenticating..." />;
     }
 
     // Return loading while redirect happens
