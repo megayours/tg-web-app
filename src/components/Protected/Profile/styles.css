@@ -115,8 +115,9 @@
 }
 
 .equipmentSection_selected {
-  background-color: var(--tg-theme-secondary-bg-color);
+  background-color: var(--tg-theme-bg-color);
   border: 1px solid var(--tg-theme-button-color);
+  
 }
 
 .equipmentSection_empty {

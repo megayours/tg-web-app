@@ -86,7 +86,7 @@ const Home = () => {
             <Card key={index} className={`home_battleCard ${battle.won ? 'home_battleWon' : 'home_battleLost'}`}>
               <div className="home_battleInfo">
                 <Text Component="strong">
-                  {battle.won ? 'Victory 🏆' : 'Defeat 💔'}
+                  {battle.won ? '🏆 Victory' : '💔 Defeat'}
                 </Text>
                 <Text className="home_battleTime">
                   {formatDate(battle.timestamp)}
