@@ -1,11 +1,12 @@
 "use client";
 
 import { ConnectKitButton } from "connectkit";
-import { Key, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useDisconnect } from "wagmi";
 import { useChromia } from "./chromia-context";
 import { Button, Divider } from "@telegram-apps/telegram-ui";
+import { useQueryClient } from "@tanstack/react-query";
 
 import './styles.css';
 
@@ -26,11 +27,14 @@ const UserButtons = () => {
     useChromia();
   const router = useRouter();
   const { disconnect } = useDisconnect();
+  const queryClient = useQueryClient();
 
   const handleLogout = () => {
     disconnect(undefined, {
       onSettled: () => {
         disconnectFromChromia();
+        // Clear query cache on disconnect
+        queryClient.invalidateQueries();
         // Delete FT_LOGIN_KEY_STORE from session storage
         sessionStorage.removeItem("FT_LOGIN_KEY_STORE");
       },
@@ -44,7 +48,14 @@ const UserButtons = () => {
       {({ isConnected, show, truncatedAddress, ensName, isConnecting }) => {
         if (!isConnected) {
           return (
-            <Button className="sm:w-44" onClick={show}>
+            <Button 
+              className="sm:w-44" 
+              onClick={() => {
+                // Clear query cache before showing connect modal
+                queryClient.invalidateQueries();
+                show?.();
+              }}
+            >
               Connect wallet
             </Button>
           );

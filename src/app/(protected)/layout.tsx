@@ -25,8 +25,12 @@ const Layout = ({
   }, [isLoading]);
 
   // Always show loading during initial load or auth check for protected routes
-  if (isInitialLoad || isLoading) {
-    return <Loading />;
+  if (isInitialLoad) {
+    return <Loading message="Starting up..." />;
+  }
+
+  if (isLoading) {
+    return <Loading message="Please check your wallet for a message to sign" />;
   }
 
   if (authStatus === "notRegistered") {

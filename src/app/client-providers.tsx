@@ -107,10 +107,16 @@ export const ClientProviders: React.FunctionComponent<
 
   return (
     <WagmiProvider config={wagmiConfig} initialState={initialState}>
-        <QueryClientProvider client={queryClient}>
-          <ConnectKitProvider>
-            <ChromiaProvider config={chromiaConfig}>
-          {children}
+      <QueryClientProvider client={queryClient}>
+        <ConnectKitProvider 
+          options={{
+            enforceSupportedChains: true,
+            initialChainId: wagmiConfig.chains[0].id,
+            overlayBlur: 0,
+          }}
+        >
+          <ChromiaProvider config={chromiaConfig}>
+            {children}
           </ChromiaProvider>
         </ConnectKitProvider>
       </QueryClientProvider>
