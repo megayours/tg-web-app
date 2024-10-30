@@ -4,6 +4,10 @@ import { mainnet } from "wagmi/chains";
 import { env } from "@/env";
 import { polygonAmoy } from "./networks";
 
+// Simple mobile detection
+const isMobile = typeof window !== 'undefined' && 
+  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
 export function getConfig(): ResolvedRegister["config"] {
   return createConfig(
     getDefaultConfig({
@@ -21,12 +25,22 @@ export function getConfig(): ResolvedRegister["config"] {
       walletConnectProjectId: env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "",
 
       // Required App Info
-      appName: "Filehub",
-
-      // Optional App Info
+      appName: "MegaYours",
       appDescription: "MegaYours",
       appUrl: "https://megayours.com",
       appIcon: "https://megayours.com/logo.png",
+
+      // Mobile-specific options
+      ...(isMobile && {
+        modalSize: 'compact',
+        walletConnectCTA: 'mobile',
+      }),
+
+      // Desktop-specific options
+      ...(!isMobile && {
+        modalSize: 'wide',
+        walletConnectCTA: 'qr',
+      }),
     }),
   );
 }

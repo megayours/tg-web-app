@@ -23,14 +23,6 @@ const NotRegistered = () => {
   }, [hasAccount]);
 
   const getStatusMessage = () => {
-    if (isMinted) {
-      return (
-        <Text Component="p" style={{ color: 'var(--tg-theme-link-color)' }}>
-          NFT minting in progress!
-        </Text>
-      );
-    }
-    
     if (error) {
       return (
         <Text Component="p" style={{ color: 'var(--tg-theme-destructive-text-color)' }}>

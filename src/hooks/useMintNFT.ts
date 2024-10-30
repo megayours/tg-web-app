@@ -52,13 +52,13 @@ export function useMintNFT(contractAddress: Address) {
       // Try to switch chain first
       if (!isCorrectChain) {
         try {
-          await switchChain({ chainId: polygonAmoy.id });
+          switchChain({ chainId: polygonAmoy.id });
         } catch (error: any) {
           // If the error indicates the chain hasn't been added, try to add it
           if (error.message?.includes('Unrecognized chain')) {
             await handleAddNetwork();
             // Try switching again after adding
-            await switchChain({ chainId: polygonAmoy.id });
+            switchChain({ chainId: polygonAmoy.id });
           } else {
             throw error;
           }
