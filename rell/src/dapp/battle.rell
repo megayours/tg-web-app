@@ -80,7 +80,8 @@ struct battle_history_dto {
 }
 
 query get_battle_history(account_id: byte_array) {
-  return battle_history_winner @* { .account.id == account_id } ( 
+  return battle_history_winner @* { .account.id == account_id } (
+    @sort_desc @omit .rowid,
     battle_history_dto(
       avatar = submission_card(
         project = .me.token.collection.project.name,

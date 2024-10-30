@@ -1,6 +1,6 @@
 'use client';
 
-import { TabsList, IconButton } from '@telegram-apps/telegram-ui';
+import { TabsList } from '@telegram-apps/telegram-ui';
 import { useNavigationStore } from '@/store/navigationStore';
 import './styles.css';
 import { TabsItem } from '@telegram-apps/telegram-ui/dist/components/Navigation/TabsList/components/TabsItem/TabsItem';
@@ -9,9 +9,9 @@ const NAVIGATION_ITEMS = [
   {
     index: 0,
     id: 'home',
-    label: 'Home',
+    label: 'Battle',
     view: 'home' as const,
-    icon: '🏠'
+    icon: '⚔️'
   },
   {
     index: 1,
