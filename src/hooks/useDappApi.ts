@@ -227,11 +227,11 @@ export function useIsInBattleQueue() {
         throw new Error('Not connected to Chromia');
       }
 
-      const isInQueue = await chromiaSession.query<boolean>('dapp.is_queued_for_battle', {
+      const isInQueue = await chromiaSession.query<number>('dapp.is_queued_for_battle', {
         account_id: chromiaSession.account.id,
       });
       
-      return isInQueue;
+      return isInQueue > 0;
     },
     enabled: Boolean(chromiaClient) && Boolean(chromiaSession) && authStatus === 'connected',
   });
@@ -246,7 +246,7 @@ export type Contender = {
 export type BattleHistory = {
   avatar: Contender;
   opponent: Contender;
-  won: boolean;
+  won: number;
   timestamp: number;
 }
 

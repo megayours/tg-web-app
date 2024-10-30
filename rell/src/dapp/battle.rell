@@ -55,6 +55,12 @@ operation queue_for_battle() {
   }
 }
 
+@extend(ft4.auth.auth_handler)
+function () = ft4.auth.add_auth_handler(
+  scope = rell.meta(queue_for_battle).mount_name,
+  flags = []
+);
+
 operation cancel_battle_queue() {
   val my_account = ft4.auth.authenticate();
   delete battle_queue @ { .account.id == my_account.id };
@@ -62,7 +68,7 @@ operation cancel_battle_queue() {
 
 @extend(ft4.auth.auth_handler)
 function () = ft4.auth.add_auth_handler(
-  scope = rell.meta(queue_for_battle).mount_name,
+  scope = rell.meta(cancel_battle_queue).mount_name,
   flags = []
 );
 
