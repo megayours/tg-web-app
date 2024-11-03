@@ -1,0 +1,11 @@
+entity queue {
+  key ft4.accounts.account;
+}
+
+entity history {
+  index ft4.accounts.account;
+  me: pfps.pfp;
+  contestant: pfps.pfp;
+  won: boolean;
+  timestamp: timestamp;
+}

@@ -1,0 +1,79 @@
+struct attributes_dto {
+  health: integer;
+  defense: integer;
+  damage: integer;
+  weight: integer;
+}
+
+query get_attributes(account_id: byte_array): attributes_dto? {
+  val stats = get_opponent(account_id);
+  if (stats == null) return null;
+  return attributes_dto(health = stats.health, defense = stats.defense, damage = stats.damage, weight = stats.weight);
+}
+
+query is_queued(account_id: byte_array): boolean {
+  return (queue @? { .account.id == account_id } limit 1) != null;
+}
+
+struct opponent_details_card {
+  project: text;
+  collection: text;
+  token_id: integer;
+  name: text;
+  image: text;
+}
+
+struct leaderboard_entry {
+  avatar: opponent_details_card;
+  wins: integer;
+}
+
+struct history_dto {
+  avatar: opponent_details_card;
+  opponent: opponent_details_card;
+  won: boolean;
+  timestamp: timestamp;
+}
+
+query get_leaderboard(): list<leaderboard_entry> {
+  val entries = history @* { .won == true } (
+    @group avatar = .me, @sort_desc @sum wins = 1
+  ) limit 10;
+
+  return entries @* {} (
+    leaderboard_entry(
+      avatar = opponent_details_card(
+        project = .avatar.token.collection.project.name,
+        collection = .avatar.token.collection.name,
+        token_id = .avatar.token.id,
+        name = .avatar.token.name,
+        image = .avatar.image
+      ),
+      wins = .wins
+    )
+  );
+}
+
+query get_history(account_id: byte_array) {
+  return history @* { .account.id == account_id } (
+    @sort_desc @omit .rowid,
+    history_dto(
+      avatar = opponent_details_card(
+        project = .me.token.collection.project.name,
+        collection = .me.token.collection.name,
+        token_id = .me.token.id,
+        name = .me.token.name,
+        image = .me.image
+      ),
+      opponent = opponent_details_card(
+        project = .contestant.token.collection.project.name,
+        collection = .contestant.token.collection.name,
+        token_id = .contestant.token.id,
+        name = .contestant.token.name,
+        image = .contestant.image
+      ),
+      won = .won,
+      timestamp = .timestamp
+    )
+  );
+}

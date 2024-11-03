@@ -1,0 +1,7 @@
+struct opponent_dto {
+  pfp: pfps.pfp;
+  health: integer;
+  defense: integer;
+  damage: integer;
+  weight: integer;
+}

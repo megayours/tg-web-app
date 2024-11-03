@@ -1,0 +1,39 @@
+operation enqueue() {
+  val my_account = ft4.auth.authenticate();
+  val my_avatar = require(pfps.get_equipped(my_account.id));
+  val contender_queue_entry = queue @? {} ( .account ) limit 1;
+
+  if (contender_queue_entry == null) {
+    create queue(my_account);
+  } else {
+    val other_contender = require(get_opponent(contender_queue_entry.id), "Opponent invalid state");
+    val my_contender = require(get_opponent(my_account.id), "Opponent not found");
+    val winner = determine_winner(other_contender, my_contender);
+    if (winner.pfp == my_contender.pfp) {
+      create history(my_account, me = my_contender.pfp, contestant = other_contender.pfp, won = true, timestamp = op_context.last_block_time);
+      create history(contender_queue_entry, me = other_contender.pfp, contestant = my_contender.pfp, won = false, timestamp = op_context.last_block_time);
+    } else {
+      create history(my_account, me = my_contender.pfp, contestant = other_contender.pfp, won = false, timestamp = op_context.last_block_time);
+      create history(contender_queue_entry, me = other_contender.pfp, contestant = my_contender.pfp, won = true, timestamp = op_context.last_block_time);
+    }
+
+    delete queue @ { contender_queue_entry };
+  }
+}
+
+@extend(ft4.auth.auth_handler)
+function () = ft4.auth.add_auth_handler(
+  scope = rell.meta(enqueue).mount_name,
+  flags = []
+);
+
+operation dequeue() {
+  val my_account = ft4.auth.authenticate();
+  delete queue @ { .account.id == my_account.id };
+}
+
+@extend(ft4.auth.auth_handler)
+function () = ft4.auth.add_auth_handler(
+  scope = rell.meta(dequeue).mount_name,
+  flags = []
+);

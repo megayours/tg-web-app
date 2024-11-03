@@ -8,7 +8,7 @@ operation give_avatar(project: text, collection: text, id: integer, name: text, 
   );
 
   val token = yours.create_token_with_id(spec, id);
-  create dapp.avatar(token, description = "Test Description", image = "https://example.com/image.png");
+  create pfps.pfp(token, description = "Test Description", image = "https://example.com/image.png");
 
   var account = ft4.accounts.account @? { .id == pubkey } limit 1;
   if (account == null) {

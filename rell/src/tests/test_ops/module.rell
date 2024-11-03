@@ -1,7 +1,7 @@
 @mount("test_ops")
 module;
 
-import dapp;
+import pfps;
 import lib.yours;
 
 namespace ft4 {

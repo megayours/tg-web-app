@@ -1,7 +1,8 @@
 @test module;
 
 import ^.test_ops;
-import dapp;
+import pfps;
+import battles;
 
 import lib.ft4.test.utils.{ ft_auth_operation_for };
 
@@ -25,14 +26,14 @@ function test_battle() {
 
   rell.test.tx()
     .op(ft_auth_operation_for(keypair1.pub))
-    .op(dapp.equip_avatar(project = "test", collection = "test", token_id = 1))
+    .op(pfps.equip(project = "test", collection = "test", token_id = 1))
     .nop()
     .sign(keypair1)
     .run();
 
   rell.test.tx()
     .op(ft_auth_operation_for(keypair2.pub))
-    .op(dapp.equip_avatar(project = "test", collection = "test", token_id = 2))
+    .op(pfps.equip(project = "test", collection = "test", token_id = 2))
     .nop()
     .sign(keypair2)
     .run();
@@ -40,20 +41,20 @@ function test_battle() {
   rell.test.set_block_interval(1000);
   rell.test.tx()
     .op(ft_auth_operation_for(keypair1.pub))
-    .op(dapp.queue_for_battle())
+    .op(battles.enqueue())
     .nop()
     .sign(keypair1)
     .run();
 
   rell.test.tx()
     .op(ft_auth_operation_for(keypair2.pub))
-    .op(dapp.queue_for_battle())
+    .op(battles.enqueue())
     .nop()
     .sign(keypair2)
     .run();
 
-  val battle_history1 = require(dapp.battle_history_winner @? { .account.id == keypair1.pub } limit 1);
-  val battle_history2 = require(dapp.battle_history_winner @? { .account.id == keypair2.pub } limit 1);
+  val battle_history1 = require(battles.history @? { .account.id == keypair1.pub } limit 1);
+  val battle_history2 = require(battles.history @? { .account.id == keypair2.pub } limit 1);
 
   assert_equals(battle_history1.me.token.name, "Test Avatar 1");
   assert_equals(battle_history2.me.token.name, "Test Avatar 2");

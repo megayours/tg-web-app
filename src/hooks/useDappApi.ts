@@ -43,7 +43,7 @@ export function useEquippedAvatar() {
         throw new Error('Not connected to Chromia');
       }
 
-      const avatar = await chromiaSession.query<Avatar>('dapp.get_equipped_avatar', {
+      const avatar = await chromiaSession.query<Avatar>('pfps.get_equipped', {
         account_id: chromiaSession.account.id,
       });
 
@@ -73,7 +73,7 @@ export function useLeaderboard() {
         throw new Error('Not connected to Chromia');
       }
 
-      const leaderboard = await chromiaSession.query<LeaderboardEntry[]>('dapp.get_leaderboard');
+      const leaderboard = await chromiaSession.query<LeaderboardEntry[]>('battles.get_leaderboard');
       
       return leaderboard.map(entry => ({
         ...entry,
@@ -97,7 +97,7 @@ export function useAllAvatars() {
         throw new Error('Not connected to Chromia');
       }
 
-      const avatars = await chromiaSession.query<Avatar[]>('dapp.get_avatars', {
+      const avatars = await chromiaSession.query<Avatar[]>('pfps.get_all', {
         account_id: chromiaSession.account.id,
       });
       
@@ -120,7 +120,7 @@ export function useEquippedEquipment() {
         throw new Error('Not connected to Chromia');
       }
 
-      const equipments = await chromiaSession.query<(Armor | Weapon)[]>('dapp.get_equipped_equipment', {
+      const equipments = await chromiaSession.query<(Armor | Weapon)[]>('equipments.get_equipped_equipment', {
         account_id: chromiaSession.account.id,
       });
 
@@ -147,7 +147,7 @@ export function useAllArmor(slot: string) {
 
       console.log('slot', slot);
       console.log('account_id', chromiaSession.account.id.toString('hex'));
-      const armors = await chromiaSession.query<Armor[]>('dapp.get_armor', {
+      const armors = await chromiaSession.query<Armor[]>('equipments.get_armor', {
         account_id: chromiaSession.account.id,
         slot,
       });
@@ -173,7 +173,7 @@ export function useAllWeapons() {
         throw new Error('Not connected to Chromia');
       }
 
-      const weapons = await chromiaSession.query<Weapon[]>('dapp.get_weapon', {
+      const weapons = await chromiaSession.query<Weapon[]>('equipments.get_weapon', {
         account_id: chromiaSession.account.id,
       });
 
@@ -204,7 +204,7 @@ export function useEquipAvatar() {
       }
 
       await chromiaSession.transactionBuilder()
-        .add(op('dapp.equip_avatar', project, collection, tokenId))
+        .add(op('equipments.equip', project, collection, tokenId))
         .add(nop())
         .buildAndSend();
     },
@@ -231,7 +231,7 @@ export function useEquipEquipment() {
       }
 
       await chromiaSession.transactionBuilder()
-        .add(op('dapp.equip_equipment', project, collection, tokenId))
+        .add(op('equipments.equip', project, collection, tokenId))
         .add(nop())
         .buildAndSend();
     },
@@ -262,7 +262,7 @@ export function useAttributes() {
         throw new Error('Not connected to Chromia');
       }
 
-      const attributes = await chromiaSession.query<Attributes>('dapp.get_attributes', {
+      const attributes = await chromiaSession.query<Attributes>('battles.get_attributes', {
         account_id: chromiaSession.account.id,
       });
       
@@ -282,7 +282,7 @@ export function useIsInBattleQueue() {
         throw new Error('Not connected to Chromia');
       }
 
-      const isInQueue = await chromiaSession.query<number>('dapp.is_queued_for_battle', {
+      const isInQueue = await chromiaSession.query<number>('battles.is_queued', {
         account_id: chromiaSession.account.id,
       });
       
@@ -317,7 +317,7 @@ export function useBattleHistory() {
         throw new Error('Not connected to Chromia');
       }
 
-      const battleHistory = await chromiaSession.query<BattleHistory[]>('dapp.get_battle_history', {
+      const battleHistory = await chromiaSession.query<BattleHistory[]>('battles.get_history', {
         account_id: chromiaSession.account.id,
       });
       
@@ -338,7 +338,7 @@ export function useDequeueForBattle() {
       }
 
       await chromiaSession.transactionBuilder()
-        .add(op('dapp.cancel_battle_queue'))
+        .add(op('battles.dequeue'))
         .add(nop())
         .buildAndSend();
     },
@@ -359,7 +359,7 @@ export function useQueueForBattle() {
       }
 
       await chromiaSession.transactionBuilder()
-        .add(op('dapp.queue_for_battle'))
+        .add(op('battles.enqueue'))
         .add(nop())
         .buildAndSend();
     },
