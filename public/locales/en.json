@@ -5,8 +5,8 @@
   },
   "pages": {
     "notRegistered": {
-      "title": "Welcome to MegaYours",
-      "description": "To access this app, you need to own a MegaYours NFT. You can mint one below, or if you already own one, you can disconnect and reconnect with the wallet containing your NFT.",
+      "title": "Welcome to PFP Clash",
+      "description": "To access this app, you need to own a PFP NFT. You can mint one below, or if you already own one, you can disconnect and reconnect with the wallet containing your NFT.",
       "mint": "Mint NFT",
       "minting": "Minting..."
     }

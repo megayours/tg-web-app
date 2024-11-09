@@ -12,8 +12,8 @@ import type { State as WagmiState } from "wagmi";
 import { ClientProviders } from './client-providers';
 
 export const metadata: Metadata = {
-  title: 'Your Application Title Goes Here',
-  description: 'Your application description goes here',
+  title: 'PFP Clash',
+  description: 'Clash with your friends over who has the best PFP',
 };
 
 type ClientProviderProps = {

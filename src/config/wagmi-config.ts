@@ -25,10 +25,10 @@ export function getConfig(): ResolvedRegister["config"] {
       walletConnectProjectId: env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "",
 
       // Required App Info
-      appName: "MegaYours",
-      appDescription: "MegaYours",
-      appUrl: "https://megayours.com",
-      appIcon: "https://megayours.com/logo.png",
+      appName: "PFP Clash",
+      appDescription: "PFP Clash",
+      appUrl: "https://tg-web-app-pearl.vercel.app",
+      appIcon: "https://tg-web-app-pearl.vercel.app/images/logo/logo.jpeg",
 
       // Mobile-specific options
       ...(isMobile && {
