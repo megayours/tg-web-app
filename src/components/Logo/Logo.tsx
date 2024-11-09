@@ -1,54 +1,57 @@
 "use client";
 
-import { useEffect, useState } from 'react';
 import './styles.css';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
 
 interface LogoProps {
   width?: number | string;
   images?: string[];
   interval?: number;
+  animate?: boolean;
 }
 
 const defaultImages = [
-  '/images/logo/logo-image1.png',
-  '/images/logo/logo-image2.png',
-  '/images/logo/logo-image3.png',
-  '/images/logo/logo-image4.png',
-  '/images/logo/logo-image5.png',
+  '/images/logo/logo.jpeg',
+  // Add more variations if you have them
 ];
 
 export default function Logo({
-  width = 300,
+  width = 168,
   images = defaultImages,
-  interval = 1000
+  interval = 5000,
+  animate = false,
 }: LogoProps) {
-  const [currentImage, setCurrentImage] = useState(0);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
+    if (!animate || images.length <= 1) return;
+
     const timer = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % images.length);
+      setCurrentImageIndex((prev) => (prev + 1) % images.length);
     }, interval);
 
     return () => clearInterval(timer);
-  }, [images, interval]);
+  }, [animate, images, interval]);
+
+  const dimensionValue = typeof width === 'number' ? width : parseInt(width);
 
   return (
-    <div className="logo_container">
-      {images.map((image, index) => (
-        <Image
-          key={index}
-          src={image}
-          alt={`Logo ${index + 1}`}
-          className="logo_image"
-          width={typeof width === 'number' ? width : parseInt(width)}
-          height={typeof width === 'number' ? width : parseInt(width)}
-          style={{
-            opacity: index === currentImage ? 1 : 0,
-          }}
-          priority={index === 0} // Prioritize loading of first image
-        />
-      ))}
+    <div 
+      className="logo_container"
+      style={{
+        width: dimensionValue,
+        height: dimensionValue,
+      }}
+    >
+      <Image
+        src={images[currentImageIndex]}
+        alt="Logo"
+        className="logo_image"
+        width={dimensionValue}
+        height={dimensionValue}
+        priority={true}
+      />
     </div>
   );
 }

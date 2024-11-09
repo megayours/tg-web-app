@@ -1,13 +1,27 @@
 .logo_container {
-  height: 100%;
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  background: var(--tg-theme-bg-color, #ffffff);
+  transition: transform 0.3s ease;
+}
+
+.logo_container:hover {
+  transform: scale(1.02);
 }
 
 .logo_image {
-  position: absolute;
-  object-fit: contain;
-  transition: opacity 0.5s ease-in-out;
+  border-radius: 24px;
+  object-fit: cover;
+  transition: all 0.3s ease;
+  /* Add a subtle shadow that works with both light and dark themes */
+  filter: drop-shadow(0 4px 8px rgba(var(--tg-theme-text-color, 0, 0, 0), 0.1));
+}
+
+/* Optional: Add a subtle glow effect on hover */
+.logo_container:hover .logo_image {
+  filter: drop-shadow(0 6px 12px rgba(var(--tg-theme-text-color, 0, 0, 0), 0.15));
 }
