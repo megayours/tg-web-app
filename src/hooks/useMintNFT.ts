@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useWriteContract, useAccount, useSimulateContract, useSwitchChain, useChainId, useConfig } from 'wagmi';
+import { useWriteContract, useAccount, useSimulateContract, useSwitchChain, useChainId } from 'wagmi';
 import { CONTRACTS } from '../config/contracts';
 import { type Address } from 'viem';
 import { polygonAmoy } from '@/config/networks';
@@ -9,7 +9,9 @@ export function useMintNFT(contractAddress: Address) {
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
 
+  console.log('chainId', chainId);
   const isCorrectChain = chainId === polygonAmoy.id;
+  console.log('isCorrectChain', isCorrectChain);
 
   const { data: simulateData, error: simulateError } = useSimulateContract({
     address: contractAddress,
